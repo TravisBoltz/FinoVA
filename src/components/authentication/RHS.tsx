@@ -63,13 +63,13 @@ export const DashboardPreview = ({
                 <div className="text-xs text-gray-500 dark:text-gray-400">
                   Revenue
                 </div>
-                <div className="font-bold dark:text-white">$24,500</div>
+                <div className="font-bold dark:text-white">GH¢24,500</div>
               </div>
               <div className="bg-green-50 dark:bg-green-900/30 p-2 rounded">
                 <div className="text-xs text-gray-500 dark:text-gray-400">
                   Profit
                 </div>
-                <div className="font-bold dark:text-white">$8,200</div>
+                <div className="font-bold dark:text-white">GH¢8,200</div>
               </div>
             </div>
           </div>

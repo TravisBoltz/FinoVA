@@ -12,7 +12,7 @@ export default function Profile() {
     company: "Johnson Enterprises",
     industry: "Technology Services",
     employeeCount: "10-49",
-    annualRevenue: "$1M - $5M",
+    annualRevenue: "GH¢1M - GH¢5M",
     location: "New York, NY",
     preferences: {
       emailNotifications: true,
@@ -199,12 +199,12 @@ export default function Profile() {
                     className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 px-3 py-2"
                     defaultValue={user.annualRevenue}
                   >
-                    <option>Less than $100K</option>
-                    <option>$100K - $500K</option>
-                    <option>$500K - $1M</option>
-                    <option>$1M - $5M</option>
-                    <option>$5M - $10M</option>
-                    <option>$10M+</option>
+                    <option>Less than GH¢100K</option>
+                    <option>GH¢100K - GH¢500K</option>
+                    <option>GH¢500K - GH¢1M</option>
+                    <option>GH¢1M - GH¢5M</option>
+                    <option>GH¢5M - GH¢10M</option>
+                    <option>GH¢10M+</option>
                   </select>
                 </div>
               </div>

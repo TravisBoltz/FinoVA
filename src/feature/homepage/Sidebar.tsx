@@ -77,7 +77,7 @@ export default function Sidebar({
                   Total Balance
                 </h3>
                 <div className="mt-1 text-xl font-semibold text-white">
-                  $24,500
+                  GH¢24,500
                 </div>
               </div>
             </div>

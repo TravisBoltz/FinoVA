@@ -9,6 +9,8 @@ import { ThemeProvider } from "./components/theme-provider";
 import { Helmet } from "react-helmet";
 import AuthContainer from "@/feature/auth/authContainer";
 import Home from "./feature/homepage/Home";
+import { Toaster } from "@/components/ui/sonner";
+
 export default function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
@@ -44,6 +46,7 @@ export default function App() {
               <Route path="/register" element={<AuthContainer />} />
               <Route path="/home" element={<Home />} />
             </Routes>
+            <Toaster />
           </div>
         </div>
         {/* <Footer /> */}

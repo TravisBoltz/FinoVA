@@ -17,7 +17,7 @@ export default function Advisory() {
       id: 2,
       title: "Consider refinancing your business loan",
       description:
-        "Current rates are 1.5% lower than your existing loan. Refinancing could save approximately $12,000 over the loan term.",
+        "Current rates are 1.5% lower than your existing loan. Refinancing could save approximately GH¢12,000 over the loan term.",
       impact: "high",
       category: "debt",
       date: "Mar 18, 2025",

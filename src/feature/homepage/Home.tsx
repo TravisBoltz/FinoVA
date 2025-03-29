@@ -18,12 +18,33 @@ import {
   ClipboardList,
 } from "lucide-react";
 import Sidebar from "./Sidebar";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const [activePage, setActivePage] = useState("dashboard");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [isAuthChecking, setIsAuthChecking] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if user is authenticated
+    const checkAuth = () => {
+      // Check for authentication token in localStorage
+      const token = localStorage.getItem("auth_token");
+      
+      if (token) {
+        setIsLoggedIn(true);
+      } else {
+        // Redirect to auth page if not logged in
+        navigate("/register");
+      }
+      setIsAuthChecking(false);
+    };
+    
+    checkAuth();
+  }, [navigate]);
 
   useEffect(() => {
     if (darkMode) {
@@ -32,6 +53,23 @@ const Home = () => {
       document.documentElement.classList.remove('dark');
     }
   }, [darkMode]);
+
+  // If still checking auth status, show loading
+  if (isAuthChecking) {
+    return (
+      <div className="flex min-h-screen w-full items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 dark:text-gray-300">Verifying authentication...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If not logged in, don't render the page (router will redirect)
+  if (!isLoggedIn) {
+    return null;
+  }
 
   const icons = {
     dashboard: ClipboardList,
@@ -97,9 +135,7 @@ const Home = () => {
         </h1>
         <div className="hidden md:flex items-center space-x-4">
           <div className="relative">
-            <button
-              className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-700"
-            >
+            <button className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-700">
               <Icon name="bell" />
               <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 transform translate-x-1/4 -translate-y-1/4"></span>
             </button>
@@ -127,9 +163,7 @@ const Home = () => {
             <h3 className="text-sm uppercase font-semibold text-gray-500 dark:text-gray-400">
               Revenue
             </h3>
-            <div
-              className="h-8 w-8 rounded-full flex items-center justify-center bg-blue-100 dark:bg-blue-900/20"
-            >
+            <div className="h-8 w-8 rounded-full flex items-center justify-center bg-blue-100 dark:bg-blue-900/20">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4 w-4 text-blue-800 dark:text-blue-500"
@@ -145,7 +179,7 @@ const Home = () => {
             </div>
           </div>
           <p className="text-2xl font-bold text-blue-800 dark:text-blue-500">
-            ${financialData.totalRevenue.toLocaleString()}
+            GH¢{financialData.totalRevenue.toLocaleString()}
           </p>
           <div className="mt-2 flex items-center">
             <span className="text-xs font-medium text-green-500 bg-green-100 bg-opacity-50 rounded-full px-2 py-0.5">
@@ -162,9 +196,7 @@ const Home = () => {
             <h3 className="text-sm uppercase font-semibold text-gray-500 dark:text-gray-400">
               Expenses
             </h3>
-            <div
-              className="h-8 w-8 rounded-full flex items-center justify-center bg-red-100 dark:bg-red-900/20"
-            >
+            <div className="h-8 w-8 rounded-full flex items-center justify-center bg-red-100 dark:bg-red-900/20">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4 w-4 text-red-500 dark:text-red-600"
@@ -180,7 +212,7 @@ const Home = () => {
             </div>
           </div>
           <p className="text-2xl font-bold text-red-500 dark:text-red-600">
-            ${financialData.totalExpenses.toLocaleString()}
+            GH¢{financialData.totalExpenses.toLocaleString()}
           </p>
           <div className="mt-2 flex items-center">
             <span className="text-xs font-medium text-red-500 bg-red-100 bg-opacity-50 rounded-full px-2 py-0.5">
@@ -197,9 +229,7 @@ const Home = () => {
             <h3 className="text-sm uppercase font-semibold text-gray-500 dark:text-gray-400">
               Net Profit
             </h3>
-            <div
-              className="h-8 w-8 rounded-full flex items-center justify-center bg-green-100 dark:bg-green-900/20"
-            >
+            <div className="h-8 w-8 rounded-full flex items-center justify-center bg-green-100 dark:bg-green-900/20">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="h-4 w-4 text-green-500 dark:text-green-600"
@@ -215,7 +245,7 @@ const Home = () => {
             </div>
           </div>
           <p className="text-2xl font-bold text-green-500 dark:text-green-600">
-            ${financialData.profit.toLocaleString()}
+            GH¢{financialData.profit.toLocaleString()}
           </p>
           <div className="mt-2 flex items-center">
             <span className="text-xs font-medium text-green-500 bg-green-100 bg-opacity-50 rounded-full px-2 py-0.5">
@@ -233,17 +263,13 @@ const Home = () => {
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             Financial Overview
           </h2>
-          <select
-            className="text-sm rounded-lg border px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-          >
+          <select className="text-sm rounded-lg border px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
             <option>Last 12 Months</option>
             <option>Last 6 Months</option>
             <option>Last Quarter</option>
           </select>
         </div>
-        <div
-          className="h-64 bg-opacity-10 rounded flex items-center justify-center bg-gray-100 dark:bg-gray-700"
-        >
+        <div className="h-64 bg-opacity-10 rounded flex items-center justify-center bg-gray-100 dark:bg-gray-700">
           <div className="w-full px-5">
             <div className="relative h-56">
               <div className="absolute bottom-0 left-0 right-0 bg-blue-500 bg-opacity-20 h-48 rounded-md"></div>
@@ -260,7 +286,7 @@ const Home = () => {
                       <div
                         className="w-1 bg-blue-500 rounded-t transition-all duration-500"
                         style={{
-                          height: `${(value / 30000) * 100}%`,
+                          height: `GH¢{(value / 30000) * 100}%`,
                         }}
                       ></div>
                     </div>
@@ -278,7 +304,7 @@ const Home = () => {
                       <div
                         className="w-1 bg-red-500 rounded-t transition-all duration-500"
                         style={{
-                          height: `${(value / 30000) * 100}%`,
+                          height: `GH¢{(value / 30000) * 100}%`,
                         }}
                       ></div>
                     </div>
@@ -286,9 +312,7 @@ const Home = () => {
                 </div>
               </div>
 
-              <div
-                className="absolute bottom-0 left-0 right-0 flex justify-between pt-2 text-xs text-gray-500 dark:text-gray-400"
-              >
+              <div className="absolute bottom-0 left-0 right-0 flex justify-between pt-2 text-xs text-gray-500 dark:text-gray-400">
                 {financialData.monthlyData.months.map((month, index) => (
                   <span key={index}>{month}</span>
                 ))}
@@ -297,17 +321,13 @@ const Home = () => {
 
             <div className="flex justify-center space-x-6 mt-4">
               <div className="flex items-center">
-                <span
-                  className="h-3 w-3 rounded-full mr-2 bg-blue-500"
-                ></span>
+                <span className="h-3 w-3 rounded-full mr-2 bg-blue-500"></span>
                 <span className="text-sm text-gray-900 dark:text-gray-100">
                   Revenue
                 </span>
               </div>
               <div className="flex items-center">
-                <span
-                  className="h-3 w-3 rounded-full mr-2 bg-red-500"
-                ></span>
+                <span className="h-3 w-3 rounded-full mr-2 bg-red-500"></span>
                 <span className="text-sm text-gray-900 dark:text-gray-100">
                   Expenses
                 </span>
@@ -334,9 +354,7 @@ const Home = () => {
                 className="p-3 rounded-xl flex flex-col items-center justify-center transition-all duration-200 hover:scale-105 bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-500"
                 onClick={() => setActivePage(action.page)}
               >
-                <span
-                  className="p-2 rounded-full mb-2 bg-blue-100 dark:bg-blue-900/20"
-                >
+                <span className="p-2 rounded-full mb-2 bg-blue-100 dark:bg-blue-900/20">
                   <Icon name={action.icon} />
                 </span>
                 <span className="text-sm font-medium">{action.name}</span>
@@ -350,9 +368,7 @@ const Home = () => {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               Recent Transactions
             </h2>
-            <button
-              className="text-sm font-medium text-blue-800 dark:text-blue-500"
-            >
+            <button className="text-sm font-medium text-blue-800 dark:text-blue-500">
               View All
             </button>
           </div>
@@ -430,9 +446,7 @@ const Home = () => {
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             Recent Notifications
           </h2>
-          <button
-            className="text-sm font-medium rounded-full py-1 px-3 bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-500"
-          >
+          <button className="text-sm font-medium rounded-full py-1 px-3 bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-500">
             Mark all as read
           </button>
         </div>

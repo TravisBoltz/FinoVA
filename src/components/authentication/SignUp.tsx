@@ -84,7 +84,7 @@ const SignUp = ({ onSwitchToSignIn }: SignUpProps) => {
       console.log("Registering with:", formData);
 
       // Use a hardcoded URL for authentication
-      const apiUrl = ""; // Fallback URL for authentication
+      const apiUrl = "https://e5ed-102-208-89-6.ngrok-free.app/api/v1/auth"; // Fallback URL for authentication
 
       console.log("Using API URL:", apiUrl);
 
