@@ -230,7 +230,7 @@ const SignUp = ({ onSwitchToSignIn }: SignUpProps) => {
         </button>
       </div>
 
-      <SocialLogin isSignIn={false} isLoading={socialLoading} />
+      <SocialLogin isSignIn={false} isLoading={socialLoading} delay={500} />
       <AuthFooter />
     </div>
   );

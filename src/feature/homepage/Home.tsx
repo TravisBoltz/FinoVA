@@ -34,6 +34,36 @@ const Home = () => {
       // Check for authentication token in localStorage
       const token = localStorage.getItem("auth_token");
       
+      // Log cookies for debugging
+      console.log("All cookies:", document.cookie);
+      
+      // Make a request to check if cookies are being sent
+      fetch("https://e5ed-102-208-89-6.ngrok-free.app/api/v1/auth/verify", {
+        method: "GET",
+        credentials: "include", // Important for cookies
+        headers: {
+          "Accept": "application/json"
+        }
+      })
+      .then(response => {
+        console.log("Auth verification response status:", response.status);
+        return response.text();
+      })
+      .then(data => {
+        console.log("Auth verification response:", data);
+        try {
+          // Try to parse as JSON if possible
+          const jsonData = JSON.parse(data);
+          console.log("Parsed JSON data:", jsonData);
+        } catch (e) {
+          // If not JSON, that's okay
+          console.log("Response is not JSON");
+        }
+      })
+      .catch(error => {
+        console.error("Error verifying authentication:", error);
+      });
+      
       if (token) {
         setIsLoggedIn(true);
       } else {

@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Loading Button Component
 export const LoadingButton = ({
@@ -101,14 +102,17 @@ export const InputField = ({
 // Social Login Component
 export const SocialLogin = ({
   isSignIn,
-  delay = 500,
-  isLoading: initialLoading = false,
+  delay,
+  isLoading: parentLoading,
+  onAuthSuccess,
 }: {
   isSignIn: boolean;
-  delay?: number;
+  delay: number;
   isLoading?: boolean;
+  onAuthSuccess?: () => void;
 }) => {
-  const [isLoading, setIsLoading] = React.useState(initialLoading);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { login } = useAuth();
 
   // Function to handle Google authentication
   const handleGoogleAuth = async () => {
@@ -158,6 +162,7 @@ export const SocialLogin = ({
           if (data.status === "success" && data.data && data.data.auth_url) {
             // Redirect to the dynamically received auth_url
             window.location.href = data.data.auth_url;
+            onAuthSuccess?.();
             return;
           } else {
             console.error("Failed to retrieve Google auth URL:", data);
@@ -199,8 +204,10 @@ export const SocialLogin = ({
     // Store a demo token
     localStorage.setItem("auth_token", "google_demo_token_12345");
 
-    // Redirect to home page
-    window.location.href = "/home";
+    // Instead of redirecting, we'll let the parent component handle rendering
+    // The parent component should check localStorage for the token
+    setIsLoading(false);
+    onAuthSuccess?.();
   };
 
   return (
