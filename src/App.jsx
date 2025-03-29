@@ -8,8 +8,7 @@ import ScrollToTopButton from "./components/ScrollToTop";
 import { ThemeProvider } from "./components/theme-provider";
 import { Helmet } from "react-helmet";
 import AuthContainer from "@/feature/auth/authContainer";
-import Home from "@/feature/homepage/Dashboard";
-
+import Home from "./feature/homepage/Home";
 export default function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
