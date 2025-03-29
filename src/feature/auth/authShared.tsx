@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { login as authLogin } from "@/utils/auth";
 
 // Loading Button Component
 export const LoadingButton = ({
@@ -112,7 +112,6 @@ export const SocialLogin = ({
   onAuthSuccess?: () => void;
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { login } = useAuth();
 
   // Function to handle Google authentication
   const handleGoogleAuth = async () => {
@@ -128,7 +127,6 @@ export const SocialLogin = ({
               "Content-Type": "application/json",
               Accept: "application/json",
             },
-            credentials: "include",
           }
         );
 

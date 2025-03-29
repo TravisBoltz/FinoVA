@@ -5,7 +5,7 @@ import { AuthFooter } from "./AuthFooter";
 import "aos/dist/aos.css";
 import React from "react";
 import Home from "@/feature/homepage/Home";
-import { useAuth } from "@/contexts/AuthContext";
+import { login } from "@/utils/auth";
 import { useNavigate } from "react-router-dom";
 
 // Importing shared components
@@ -36,7 +36,6 @@ const SignIn = ({ onSwitchToSignUp, onAuthSuccess }: SignInProps) => {
   const [socialLoading, setSocialLoading] = useState<boolean>(false);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  const { login } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -93,6 +92,7 @@ const SignIn = ({ onSwitchToSignUp, onAuthSuccess }: SignInProps) => {
       setErrors({
         email: "Login failed. Please check your credentials and try again.",
       });
+    } finally {
       setIsSubmitting(false);
     }
   };
