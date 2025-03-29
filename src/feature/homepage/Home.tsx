@@ -6,7 +6,6 @@ import Advisory from "./Advisory";
 import { financialData } from "@/constansts/data";
 import {
   BarChart,
-  Bell,
   CreditCard,
   LogOut,
   Menu,
@@ -33,37 +32,7 @@ const Home = () => {
     const checkAuth = () => {
       // Check for authentication token in localStorage
       const token = localStorage.getItem("auth_token");
-      
-      // Log cookies for debugging
-      console.log("All cookies:", document.cookie);
-      
-      // Make a request to check if cookies are being sent
-      fetch("https://e5ed-102-208-89-6.ngrok-free.app/api/v1/auth/verify", {
-        method: "GET",
-        credentials: "include", // Important for cookies
-        headers: {
-          "Accept": "application/json"
-        }
-      })
-      .then(response => {
-        console.log("Auth verification response status:", response.status);
-        return response.text();
-      })
-      .then(data => {
-        console.log("Auth verification response:", data);
-        try {
-          // Try to parse as JSON if possible
-          const jsonData = JSON.parse(data);
-          console.log("Parsed JSON data:", jsonData);
-        } catch (e) {
-          // If not JSON, that's okay
-          console.log("Response is not JSON");
-        }
-      })
-      .catch(error => {
-        console.error("Error verifying authentication:", error);
-      });
-      
+
       if (token) {
         setIsLoggedIn(true);
       } else {
@@ -72,15 +41,15 @@ const Home = () => {
       }
       setIsAuthChecking(false);
     };
-    
+
     checkAuth();
   }, [navigate]);
 
   useEffect(() => {
     if (darkMode) {
-      document.documentElement.classList.add('dark');
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove("dark");
     }
   }, [darkMode]);
 
@@ -90,7 +59,9 @@ const Home = () => {
       <div className="flex min-h-screen w-full items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 dark:text-gray-300">Verifying authentication...</p>
+          <p className="text-gray-600 dark:text-gray-300">
+            Verifying authentication...
+          </p>
         </div>
       </div>
     );
@@ -109,7 +80,6 @@ const Home = () => {
     profile: User,
     logout: LogOut,
     chart: LineChart,
-    bell: Bell,
     moon: Moon,
     sun: Sun,
     menu: Menu,
@@ -129,9 +99,7 @@ const Home = () => {
   );
 
   const Header = () => (
-    <header
-      className="md:hidden sticky top-0 z-20 px-4 py-3 flex items-center justify-between shadow-sm bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
-    >
+    <header className="md:hidden sticky top-0 z-20 px-4 py-3 flex items-center justify-between shadow-sm bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
       <div className="flex items-center">
         <button onClick={() => setIsMobileMenuOpen(true)} className="mr-3">
           <Icon name="menu" />
@@ -141,12 +109,6 @@ const Home = () => {
         </h1>
       </div>
       <div className="flex items-center space-x-3">
-        <button
-          className="relative p-1 rounded-full hover:bg-opacity-10 bg-gray-100 dark:bg-gray-700"
-        >
-          <Icon name="bell" />
-          <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 transform translate-x-1/4 -translate-y-1/4"></span>
-        </button>
         <button
           className="p-1 rounded-full hover:bg-opacity-10 bg-gray-100 dark:bg-gray-700"
           onClick={() => setDarkMode(!darkMode)}
@@ -164,12 +126,6 @@ const Home = () => {
           Dashboard
         </h1>
         <div className="hidden md:flex items-center space-x-4">
-          <div className="relative">
-            <button className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-700">
-              <Icon name="bell" />
-              <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 transform translate-x-1/4 -translate-y-1/4"></span>
-            </button>
-          </div>
           <button
             onClick={() => setDarkMode(!darkMode)}
             className="p-1.5 rounded-full bg-gray-100 dark:bg-gray-700"
@@ -575,15 +531,15 @@ const Home = () => {
   return (
     <div className="h-screen bg-gray-100 dark:bg-gray-900">
       <div className="flex h-full">
-        <Sidebar 
-          isMobileMenuOpen={isMobileMenuOpen} 
-          setIsMobileMenuOpen={setIsMobileMenuOpen} 
-          activePage={activePage} 
-          setActivePage={setActivePage} 
-          isLoggedIn={isLoggedIn} 
-          setIsLoggedIn={setIsLoggedIn} 
-          darkMode={darkMode} 
-          setDarkMode={setDarkMode} 
+        <Sidebar
+          isMobileMenuOpen={isMobileMenuOpen}
+          setIsMobileMenuOpen={setIsMobileMenuOpen}
+          activePage={activePage}
+          setActivePage={setActivePage}
+          isLoggedIn={isLoggedIn}
+          setIsLoggedIn={setIsLoggedIn}
+          darkMode={darkMode}
+          setDarkMode={setDarkMode}
         />
 
         <div

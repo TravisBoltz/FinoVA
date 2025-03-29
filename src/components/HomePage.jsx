@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Footer } from "./Footer";
 import Header from "./Header";
+import { Link } from "react-router-dom";
 
 const HeroSection = () => {
   return (
@@ -39,12 +40,14 @@ const HeroSection = () => {
             data-aos="fade-up"
             data-aos-delay="200"
           >
-            <Button
-              size="lg"
-              className="bg-blue-800 hover:bg-blue-700 text-white font-bold px-4 text-xl"
-            >
-              Get Started
-            </Button>
+            <Link to={"/register"}>
+              <Button
+                size="lg"
+                className="bg-blue-800 hover:bg-blue-700 text-white font-bold px-4 text-xl"
+              >
+                Get Started
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
@@ -69,34 +72,24 @@ const TeamStatsSection = () => {
       icon: <BarChart3 className="w-6 h-6" />,
     },
     {
-      value: "3.5x",
-      label: "increase in loan approval rates",
-      icon: <Users className="w-6 h-6" />,
-    },
-    {
       value: "75%",
       label: "businesses report better cash flow",
       icon: <Building2 className="w-6 h-6" />,
     },
     {
-      value: "2023",
+      value: "2025",
       label: "year founded",
       icon: <Calendar className="w-6 h-6" />,
     },
     {
       value: "1,200+",
-      label: "SMEs served across Africa",
+      label: "SMEs to be served across Africa",
       icon: <Globe className="w-6 h-6" />,
     },
     {
       value: "24/7",
       label: "AI-powered support",
       icon: <Clock className="w-6 h-6" />,
-    },
-    {
-      value: "$5M+",
-      label: "in loans facilitated",
-      icon: <TrendingUp className="w-6 h-6" />,
     },
   ];
 
@@ -116,11 +109,11 @@ const TeamStatsSection = () => {
         </div>
 
         <div
-          className="grid grid-cols-4 gap-0"
+          className="grid grid-cols-3 gap-0"
           data-aos="fade-up"
           data-aos-delay="100"
         >
-          {stats.slice(0, 4).map((stat, index) => (
+          {stats.slice(0, 3).map((stat, index) => (
             <div
               key={index}
               className="border-r border-b border-gray-700 p-6 text-center"
@@ -141,14 +134,14 @@ const TeamStatsSection = () => {
         </div>
 
         <div
-          className="grid grid-cols-4 gap-0"
+          className="grid grid-cols-3 gap-0"
           data-aos="fade-up"
           data-aos-delay="200"
         >
-          {stats.slice(4).map((stat, index) => (
+          {stats.slice(3, 6).map((stat, index) => (
             <div
               key={index}
-              className="border-r border-t border-gray-700 p-6 text-center"
+              className="border-r  border-gray-700 p-6 text-center"
             >
               <div className="flex justify-center mb-3">
                 <div className="bg-blue-500/20 p-3 rounded-full">
