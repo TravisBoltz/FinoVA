@@ -1,45 +1,28 @@
-import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./components/HomePage";
 import ContactPage from "./components/ContactPage";
 import AboutUs from "./components/AboutUs";
-import Header from "./components/Header";
-import { Footer } from "./components/Footer";
+// import Header from "./components/Header";
+// import { Footer } from "./components/Footer";
 import ScrollToTopButton from "./components/ScrollToTop";
 import { ThemeProvider } from "./components/theme-provider";
 import { Helmet } from "react-helmet";
-import AuthContainer from "./components/authentication/LHS";
+import AuthContainer from "@/feature/auth/authContainer";
+import Home from "@/feature/homepage/Dashboard";
 
 export default function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <Helmet>
-        <title>TechnoNimbus - Cloud Solutions & Innovation</title>
-        <link
-          rel="icon"
-          type="image/svg+xml"
-          href="/logo (1).svg"
-          sizes="96x96"
-        />
-        <link
-          rel="icon"
-          type="image/svg+xml"
-          href="/logo (1).svg"
-          sizes="32x32"
-        />
-        <link
-          rel="icon"
-          type="image/svg+xml"
-          href="/logo (1).svg"
-          sizes="16x16"
-        />{" "}
+        <title>FionVa - Fintech Solutions & Innovation</title>
+
         <meta
           name="description"
-          content="TechnoNimbus - Leading provider of cloud solutions and innovative technology services"
+          content="FionVa - Leading provider of cloud solutions and innovative technology services"
         />
         <meta
           name="keywords"
-          content="cloud computing, technology, innovation, digital solutions"
+          content="Fintech, technology, innovation, digital solutions"
         />
       </Helmet>
       <Router>
@@ -53,17 +36,18 @@ export default function App() {
 
           {/* Foreground Content */}
           <div className="relative z-10">
-            <Header />
+            {/* <Header /> */}
             <ScrollToTopButton />
             <Routes>
               <Route path="/" element={<HomePage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/about-us" element={<AboutUs />} />
               <Route path="/register" element={<AuthContainer />} />
+              <Route path="/home" element={<Home />} />
             </Routes>
-            <Footer />
           </div>
         </div>
+        {/* <Footer /> */}
       </Router>
     </ThemeProvider>
   );

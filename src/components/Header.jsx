@@ -1,4 +1,4 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu } from "lucide-react";
@@ -36,7 +36,7 @@ const Header = () => {
     }`}
     >
       <div className="container mx-auto px-4 md:px-8 flex justify-between items-center">
-        <Link to="/" data-aos="fade-down" className="text-xl font-bold">
+        <Link to="/" data-aos="fade-down" className="text-5xl font-bold">
           Fino<span className="text-techno_main">Va</span>
         </Link>
 

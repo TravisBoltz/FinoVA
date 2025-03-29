@@ -13,6 +13,8 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { MessageSquare, Mail, Phone, MapPin } from "lucide-react";
+import Header from "./Header";
+import { Footer } from "./Footer";
 
 const contactSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -35,8 +37,9 @@ const ContactPage = () => {
   };
 
   return (
-    <div className="min-h-screen  py-12">
-      <div className="container mx-auto px-4">
+    <div className="min-h-screen  ">
+      <Header />
+      <div className="container mx-auto px-4 py-12">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-techno_main to-techno_tertiary">
             Get in Touch
@@ -204,6 +207,7 @@ const ContactPage = () => {
           </Card>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

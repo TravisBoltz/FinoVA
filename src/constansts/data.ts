@@ -1,0 +1,97 @@
+export const financialData = {
+    totalRevenue: 128500,
+    totalExpenses: 87200,
+    profit: 41300,
+    creditScore: 720,
+    notifications: [
+      { id: 1, text: "Monthly financial report is ready", type: "report" },
+      { id: 2, text: "New investment opportunity detected", type: "advisory" },
+      { id: 3, text: "Credit score improved by 15 points", type: "credit" },
+    ],
+    investments: [
+      {
+        name: "Tech Growth Fund",
+        risk: "Medium",
+        return: "12%",
+        recommendation: "Strong Buy",
+      },
+      {
+        name: "Sustainable Energy ETF",
+        risk: "Low",
+        return: "8%",
+        recommendation: "Buy",
+      },
+      {
+        name: "Small Cap Value",
+        risk: "High",
+        return: "18%",
+        recommendation: "Consider",
+      },
+    ],
+    creditFactors: [
+      { name: "Payment History", score: 85, impact: "Positive" },
+      { name: "Debt Utilization", score: 70, impact: "Neutral" },
+      { name: "Length of History", score: 65, impact: "Neutral" },
+      { name: "Credit Mix", score: 90, impact: "Very Positive" },
+    ],
+    modules: [
+      { id: 1, name: "Budgeting Basics", progress: 100 },
+      { id: 2, name: "Effective Record-Keeping", progress: 75 },
+      { id: 3, name: "Cash Flow Management", progress: 30 },
+      { id: 4, name: "Tax Planning Strategies", progress: 0 },
+    ],
+    recentTransactions: [
+      {
+        id: 1,
+        description: "Office Supplies",
+        amount: -450,
+        date: "Mar 18, 2025",
+        category: "Expense",
+      },
+      {
+        id: 2,
+        description: "Client Payment - ABC Corp",
+        amount: 2500,
+        date: "Mar 17, 2025",
+        category: "Income",
+      },
+      {
+        id: 3,
+        description: "Software Subscription",
+        amount: -89,
+        date: "Mar 15, 2025",
+        category: "Expense",
+      },
+      {
+        id: 4,
+        description: "Client Payment - XYZ Ltd",
+        amount: 3200,
+        date: "Mar 12, 2025",
+        category: "Income",
+      },
+    ],
+    monthlyData: {
+      income: [
+        18500, 19200, 21300, 22800, 23100, 22400, 24100, 25600, 24800, 26200,
+        27500, 28300,
+      ],
+      expenses: [
+        12300, 12100, 13200, 14100, 14500, 14800, 15200, 16300, 15900, 16700,
+        17200, 17900,
+      ],
+      months: [
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+        "Jan",
+        "Feb",
+        "Mar",
+      ],
+    },
+  };

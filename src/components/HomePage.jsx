@@ -4,10 +4,11 @@ import "aos/dist/aos.css";
 import { Button } from "@/components/ui/button";
 import { Star } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Footer } from "./Footer";
+import Header from "./Header";
 const HeroSection = () => {
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden ">
-      {/* <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGgtNnYxMmgtNnYtNmgtNnYxMmg2djZoNnYtNmg2di0xMnoiIHN0cm9rZT0iI2UyZThlYSIgc3Ryb2tlLXdpZHRoPSIyIi8+PC9nPjwvc3ZnPg==')] opacity-5"></div> */}
+    <section className="relative flex overflow-hidden ">
       <div className="container mx-auto px-4 md:px-8 py-16 md:py-24 flex flex-col md:flex-row items-center justify-between">
         <div
           data-aos="fade-right"
@@ -57,7 +58,6 @@ const HeroSection = () => {
   );
 };
 
-//   const projects = [
 //     {
 //       title: "Lhydra",
 //       description:
@@ -321,10 +321,12 @@ export default function HomePage() {
 
   return (
     <div className="overflow-hidden">
+      <Header />
       <HeroSection />
       <ProjectsSection />
       {/* <FeatureSection /> */}
       <TeamSection />
+      <Footer />
     </div>
   );
 }
