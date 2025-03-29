@@ -1,4 +1,9 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import HomePage from "./components/HomePage";
 import ContactPage from "./components/ContactPage";
 import AboutUs from "./components/AboutUs";
@@ -17,18 +22,18 @@ import PropTypes from "prop-types";
 const ProtectedRoute = ({ children }) => {
   // Check if token exists in localStorage
   const token = localStorage.getItem("auth_token");
-  
+
   if (!token) {
     // Redirect to auth page if not authenticated
     return <Navigate to="/auth" replace />;
   }
-  
+
   return children;
 };
 
 // Add PropTypes validation
 ProtectedRoute.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
 };
 
 export default function App() {
@@ -64,15 +69,14 @@ export default function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/about-us" element={<AboutUs />} />
-                <Route path="/auth" element={<AuthContainer />} />
                 <Route path="/register" element={<AuthContainer />} />
-                <Route 
-                  path="/home" 
+                <Route
+                  path="/home"
                   element={
                     <ProtectedRoute>
                       <Home />
                     </ProtectedRoute>
-                  } 
+                  }
                 />
               </Routes>
               <Toaster />

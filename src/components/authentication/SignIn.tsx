@@ -6,6 +6,7 @@ import "aos/dist/aos.css";
 import React from "react";
 import Home from "@/feature/homepage/Home";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 // Importing shared components
 import { LoadingButton } from "@/feature/auth/authShared";
@@ -36,6 +37,7 @@ const SignIn = ({ onSwitchToSignUp, onAuthSuccess }: SignInProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   const { login } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (typeof window !== "undefined" && AOS.refresh) {
@@ -95,10 +97,11 @@ const SignIn = ({ onSwitchToSignUp, onAuthSuccess }: SignInProps) => {
     }
   };
 
-  if (isAuthenticated) {
-    return <Home />;
-  }
-
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/home");
+    }
+  }, [isAuthenticated, navigate]);
   return (
     <div className="max-w-md mx-auto w-full">
       <h2
