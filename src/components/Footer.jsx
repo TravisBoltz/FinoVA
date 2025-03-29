@@ -46,7 +46,7 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8 text-center md:text-left">
           <div>
             <h3 className="text-xl font-bold mb-4">FinoVa</h3>
-            <p className="text-gray-400">
+            <p className="dark:text-gray-400">
               Elevating your cloud experience with cutting-edge solutions.
             </p>
           </div>
@@ -59,7 +59,7 @@ export const Footer = () => {
                   <li key={idx}>
                     <a
                       href={link.href}
-                      className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors justify-center md:justify-start"
+                      className="flex items-center gap-2 dark:text-gray-400 hover:text-white transition-colors justify-center md:justify-start"
                     >
                       {link.icon}
                       <span>{link.label}</span>
