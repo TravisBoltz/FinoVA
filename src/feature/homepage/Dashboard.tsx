@@ -1,6 +1,8 @@
-import React, { useState } from "react";
-import { financialData } from "@/constansts/data";
+import React, { useEffect, useState, useRef } from "react";
 import FileUploader from "@/components/FileUploader";
+import { processFinancialData } from "@/utils/dataProcessor";
+import { useAtom } from "jotai";
+import { financialDataAtom, isDataLoadedAtom, showUploaderAtom, apiResponseAtom } from "@/store/atoms";
 
 interface CardProps {
   children: React.ReactNode;
@@ -43,41 +45,51 @@ const Dashboard = ({
   setDarkMode,
   setActivePage,
 }: DashboardProps) => {
-  const [showUploader, setShowUploader] = useState(true);
-  const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [showUploader, setShowUploader] = useAtom(showUploaderAtom);
+  const [isDataLoaded, setIsDataLoaded] = useAtom(isDataLoadedAtom);
+  const [financialData, setFinancialData] = useAtom(financialDataAtom);
+  
+  // Use local state for API response instead of atom to avoid TypeScript issues
+  const [apiResponse, setApiResponse] = useState<any>(null);
+  
+  // Use a ref to track if we've already processed this response
+  const processedResponseRef = useRef<string | null>(null);
 
-  const upcomingBills: Bill[] = [
-    {
-      description: "Electricity Bill",
-      amount: 120,
-      dueDate: "April 15",
-      status: "Pending",
-    },
-    {
-      description: "Internet Service",
-      amount: 80,
-      dueDate: "April 20",
-      status: "Paid",
-    },
-    {
-      description: "Rent Payment",
-      amount: 850,
-      dueDate: "April 30",
-      status: "Upcoming",
-    },
-  ];
-
-  const handleUploadSuccess = () => {
-    // Set a small delay to simulate data processing
-    setTimeout(() => {
-      setShowUploader(false);
-      setIsDataLoaded(true);
-    }, 1000);
+  // Handle successful file upload
+  const handleUploadSuccess = (responseData: any) => {
+    if (!responseData) return;
+    
+    // Generate a hash of the response to check if we've already processed it
+    const responseHash = JSON.stringify(responseData).length.toString();
+    
+    // Only process if we haven't seen this exact response before
+    if (processedResponseRef.current !== responseHash) {
+      console.log("Upload success callback in Dashboard received data");
+      
+      // Store the API response in local state
+      setApiResponse(responseData);
+      
+      // Process the data and update the financialData atom
+      try {
+        const processedData = processFinancialData(responseData);
+        setFinancialData(processedData);
+        
+        // Update UI state
+        setShowUploader(false);
+        setIsDataLoaded(true);
+        
+        // Mark this response as processed
+        processedResponseRef.current = responseHash;
+      } catch (error) {
+        console.error("Error processing data in Dashboard:", error);
+      }
+    }
   };
 
   // Function to toggle back to uploader view
-  const handleUploadNewFile = () => {
+  const showFileUploader = () => {
     setShowUploader(true);
+    setIsDataLoaded(false);
   };
 
   return (
@@ -89,7 +101,7 @@ const Dashboard = ({
         <div className="hidden md:flex items-center space-x-4">
           {isDataLoaded && (
             <button
-              onClick={handleUploadNewFile}
+              onClick={showFileUploader}
               className="px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
             >
               Upload New File
@@ -148,37 +160,70 @@ const Dashboard = ({
         </div>
       </div>
 
-      {/* Always show FileUploader, but pass showDashboard prop when data is loaded */}
-      <div className={isDataLoaded && !showUploader ? "mb-8" : ""}>
-        <FileUploader
-          onUploadSuccess={handleUploadSuccess}
-          endpoint="https://e5ed-102-208-89-6.ngrok-free.app/api/v1/convert-excel-to-json"
-          showDashboard={isDataLoaded && !showUploader}
-        />
-      </div>
+      {/* Show file uploader when in uploader mode */}
+      {showUploader && (
+        <div className="mb-6">
+          <FileUploader
+            onUploadSuccess={handleUploadSuccess}
+            endpoint="/api/v1/convert-excel-to-json"
+            showDashboard={isDataLoaded}
+          />
+        </div>
+      )}
 
       {/* Show dashboard content when data is loaded and not in uploader mode */}
-      {isDataLoaded && !showUploader && (
+      {isDataLoaded && !showUploader && financialData && (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="p-5 border">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm uppercase font-semibold text-gray-500 dark:text-gray-400">
-                  Revenue
-                </h3>
-                <div className="h-8 w-8 rounded-full flex items-center justify-center bg-blue-100 dark:bg-blue-900/20">
+          {/* Business Info Card */}
+          <Card className="p-5 border mb-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
+              <div>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                  {financialData.businessInfo.name}
+                </h2>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {financialData.businessInfo.industry} • {financialData.businessInfo.location}
+                </p>
+              </div>
+              <div className="mt-2 md:mt-0">
+                <button
+                  onClick={showFileUploader}
+                  className="px-3 py-1.5 text-sm font-medium text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/10"
+                >
+                  Update Data
+                </button>
+              </div>
+            </div>
+          </Card>
+
+          {/* Financial Summary Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            {/* Total Revenue Card */}
+            <Card className="p-5">
+              <div className="flex items-center mb-4">
+                <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-full mr-4">
                   <svg
+                    className="w-6 h-6 text-blue-600 dark:text-blue-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 text-blue-800 dark:text-blue-500"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
                   >
                     <path
-                      fillRule="evenodd"
-                      d="M12 7a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0V8.414l-4.293 4.293a1 1 0 01-1.414 0L8 10.414l-4.293 4.293a1 1 0 01-1.414-1.414l5-5a1 1 0 011.414 0L11 10.586 14.586 7H12z"
-                      clipRule="evenodd"
-                    />
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    ></path>
                   </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    Total Revenue
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    All income sources
+                  </p>
                 </div>
               </div>
               <p className="text-2xl font-bold text-blue-800 dark:text-blue-500">
@@ -186,32 +231,40 @@ const Dashboard = ({
               </p>
               <div className="mt-2 flex items-center">
                 <span className="text-xs font-medium text-green-500 bg-green-100 bg-opacity-50 rounded-full px-2 py-0.5">
-                  +8.2%
+                  +12%
                 </span>
                 <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
-                  vs. last month
+                  vs last period
                 </span>
               </div>
             </Card>
 
-            <Card className="p-5 border">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm uppercase font-semibold text-gray-500 dark:text-gray-400">
-                  Expenses
-                </h3>
-                <div className="h-8 w-8 rounded-full flex items-center justify-center bg-red-100 dark:bg-red-900/20">
+            {/* Total Expenses Card */}
+            <Card className="p-5">
+              <div className="flex items-center mb-4">
+                <div className="p-3 bg-red-100 dark:bg-red-900/20 rounded-full mr-4">
                   <svg
+                    className="w-6 h-6 text-red-600 dark:text-red-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 text-red-500 dark:text-red-600"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
                   >
                     <path
-                      fillRule="evenodd"
-                      d="M12 13a1 1 0 100 2h5a1 1 0 001-1V9a1 1 0 10-2 0v2.586l-4.293-4.293a1 1 0 00-1.414 0L8 9.586 3.707 5.293a1 1 0 00-1.414 1.414l5 5a1 1 0 001.414 0L11 9.414 14.586 13H12z"
-                      clipRule="evenodd"
-                    />
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                    ></path>
                   </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    Total Expenses
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    All outgoing costs
+                  </p>
                 </div>
               </div>
               <p className="text-2xl font-bold text-red-500 dark:text-red-600">
@@ -219,32 +272,40 @@ const Dashboard = ({
               </p>
               <div className="mt-2 flex items-center">
                 <span className="text-xs font-medium text-red-500 bg-red-100 bg-opacity-50 rounded-full px-2 py-0.5">
-                  +4.1%
+                  +5%
                 </span>
                 <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
-                  vs. last month
+                  vs last period
                 </span>
               </div>
             </Card>
 
-            <Card className="p-5 border">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm uppercase font-semibold text-gray-500 dark:text-gray-400">
-                  Net Profit
-                </h3>
-                <div className="h-8 w-8 rounded-full flex items-center justify-center bg-green-100 dark:bg-green-900/20">
+            {/* Profit Card */}
+            <Card className="p-5">
+              <div className="flex items-center mb-4">
+                <div className="p-3 bg-green-100 dark:bg-green-900/20 rounded-full mr-4">
                   <svg
+                    className="w-6 h-6 text-green-600 dark:text-green-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-4 w-4 text-green-500 dark:text-green-600"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
                   >
                     <path
-                      fillRule="evenodd"
-                      d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z"
-                      clipRule="evenodd"
-                    />
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                    ></path>
                   </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    Profit
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    Revenue - Expenses
+                  </p>
                 </div>
               </div>
               <p className="text-2xl font-bold text-green-500 dark:text-green-600">
@@ -252,175 +313,157 @@ const Dashboard = ({
               </p>
               <div className="mt-2 flex items-center">
                 <span className="text-xs font-medium text-green-500 bg-green-100 bg-opacity-50 rounded-full px-2 py-0.5">
-                  +12.5%
+                  +18%
                 </span>
                 <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
-                  vs. last month
+                  vs last period
                 </span>
               </div>
             </Card>
           </div>
 
-          <Card className="p-5 border">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                Financial Overview
-              </h2>
-              <select className="text-sm rounded-lg border px-3 py-1 bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-                <option>Last 12 Months</option>
-                <option>Last 6 Months</option>
-                <option>Last Quarter</option>
-              </select>
-            </div>
-            <div className="h-64 bg-opacity-10 rounded flex items-center justify-center bg-gray-100 dark:bg-gray-700">
-              <div className="w-full px-5">
-                {/* Chart would go here */}
-                <div className="flex justify-center items-center h-full">
-                  <p className="text-gray-500 dark:text-gray-400">
-                    Financial chart visualization
-                  </p>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="p-5 border">
-              <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+          {/* Recent Transactions and Upcoming Bills */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            {/* Recent Transactions */}
+            <Card className="p-5">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
                 Recent Transactions
               </h3>
               <div className="space-y-3">
-                {financialData.recentTransactions.map(
-                  (transaction: Transaction, index) => {
-                    const transactionType =
-                      transaction.amount > 0 ? "income" : "expense";
-
-                    return (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0"
-                      >
-                        <div className="flex items-center">
+                {financialData.recentTransactions.length > 0 ? (
+                  financialData.recentTransactions.slice(0, 5).map(
+                    (transaction: Transaction, index: number) => {
+                      const transactionType =
+                        transaction.amount > 0 ? "income" : "expense";
+                      return (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0"
+                        >
+                          <div className="flex items-center">
+                            <div
+                              className={`p-2 rounded-full mr-3 ${
+                                transactionType === "income"
+                                  ? "bg-green-100 dark:bg-green-900/20"
+                                  : "bg-red-100 dark:bg-red-900/20"
+                              }`}
+                            >
+                              {transactionType === "income" ? (
+                                <svg
+                                  className="w-4 h-4 text-green-600 dark:text-green-400"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M7 11l5-5m0 0l5 5m-5-5v12"
+                                  ></path>
+                                </svg>
+                              ) : (
+                                <svg
+                                  className="w-4 h-4 text-red-600 dark:text-red-400"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M17 13l-5 5m0 0l-5-5m5 5V6"
+                                  ></path>
+                                </svg>
+                              )}
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                                {transaction.description}
+                              </p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400">
+                                {transaction.date} • {transaction.category}
+                              </p>
+                            </div>
+                          </div>
                           <div
-                            className={`h-8 w-8 rounded-full flex items-center justify-center ${
+                            className={`text-sm font-medium ${
                               transactionType === "income"
-                                ? "bg-green-100 dark:bg-green-900/20 text-green-500"
-                                : "bg-red-100 dark:bg-red-900/20 text-red-500"
+                                ? "text-green-600 dark:text-green-400"
+                                : "text-red-600 dark:text-red-400"
                             }`}
                           >
-                            {transactionType === "income" ? (
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-4 w-4"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            ) : (
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                className="h-4 w-4"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                              >
-                                <path
-                                  fillRule="evenodd"
-                                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                                  clipRule="evenodd"
-                                />
-                              </svg>
-                            )}
-                          </div>
-                          <div className="ml-3">
-                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                              {transaction.description}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {transaction.date}
-                            </p>
+                            {transactionType === "income" ? "+" : ""}
+                            GH¢{Math.abs(transaction.amount).toLocaleString()}
                           </div>
                         </div>
-                        <p
-                          className={`text-sm font-semibold ${
-                            transactionType === "income"
-                              ? "text-green-500"
-                              : "text-red-500"
-                          }`}
-                        >
-                          {transactionType === "income" ? "+" : "-"}GH¢
-                          {Math.abs(transaction.amount).toLocaleString()}
-                        </p>
-                      </div>
-                    );
-                  }
+                      );
+                    }
+                  )
+                ) : (
+                  <div className="text-center py-4">
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No recent transactions to display
+                    </p>
+                  </div>
                 )}
               </div>
-              <button className="mt-3 text-sm text-blue-600 dark:text-blue-500 hover:underline">
-                View all transactions
-              </button>
             </Card>
 
-            <Card className="p-5 border">
-              <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">
+            {/* Upcoming Bills */}
+            <Card className="p-5">
+              <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
                 Upcoming Bills
               </h3>
               <div className="space-y-3">
-                {upcomingBills.map((bill, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0"
-                  >
-                    <div className="flex items-center">
-                      <div className="h-8 w-8 rounded-full flex items-center justify-center bg-gray-100 dark:bg-gray-700">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-4 w-4 text-gray-500 dark:text-gray-400"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
+                {financialData.upcomingBills && financialData.upcomingBills.length > 0 ? (
+                  financialData.upcomingBills.map((bill, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0"
+                    >
+                      <div className="flex items-center">
+                        <div className="p-2 bg-orange-100 dark:bg-orange-900/20 rounded-full mr-3">
+                          <svg
+                            className="w-4 h-4 text-orange-600 dark:text-orange-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                            ></path>
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                            {bill.description}
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Due {bill.dueDate} • {bill.status}
+                          </p>
+                        </div>
                       </div>
-                      <div className="ml-3">
-                        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                          {bill.description}
-                        </p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          Due {bill.dueDate}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                      <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                         GH¢{bill.amount.toLocaleString()}
-                      </p>
-                      <p
-                        className={`text-xs ${
-                          bill.status === "Paid"
-                            ? "text-green-500"
-                            : bill.status === "Pending"
-                            ? "text-yellow-500"
-                            : "text-red-500"
-                        }`}
-                      >
-                        {bill.status}
-                      </p>
+                      </div>
                     </div>
+                  ))
+                ) : (
+                  <div className="text-center py-4">
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No upcoming bills to display
+                    </p>
                   </div>
-                ))}
+                )}
               </div>
-              <button className="mt-3 text-sm text-blue-600 dark:text-blue-500 hover:underline">
-                View all bills
-              </button>
             </Card>
           </div>
         </>

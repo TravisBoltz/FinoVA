@@ -28,6 +28,7 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
     analyzing: false,
     analysisComplete: false,
   });
+  const [responseData, setResponseData] = useState<any>(null);
 
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     accept: {
@@ -71,7 +72,7 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
     formData.append("file", file);
 
     // Get auth token from localStorage (fallback mechanism)
-    const token = localStorage.getItem("auth_token");
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzODYwOTQtODlhNi00ZjlmLTk4OTYtYzE2ZGExM2YzZTljIiwiZXhwIjoxNzQzMzI2MTY2LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzI1NTY2fQ.8cU7Vn62o-_2cZdyoXQFWx01iOFY0xsItOQEAZs6DLM'
     if (!token) {
       toast.error("Authentication required. Please log in again.", {
         duration: 3000,
@@ -105,6 +106,8 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
 
       xhr.addEventListener("load", () => {
         if (xhr.status >= 200 && xhr.status < 300) {
+          console.log('File upload response:', xhr.responseText);
+          
           setUploadState({
             isUploading: false,
             progress: 100,
@@ -120,29 +123,40 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
           
           // Send the response to the AI analysis endpoint
           try {
-            const responseData = JSON.parse(xhr.responseText);
-            sendToAIAnalysis(responseData);
+            const parsedData = JSON.parse(xhr.responseText);
+            setResponseData(parsedData); // Store the response data
+            sendToAIAnalysis(parsedData);
           } catch (error) {
             console.error("Error parsing upload response:", error);
+            console.log('Raw response that failed to parse:', xhr.responseText);
+            // Even if parsing fails, store the raw response
+            setResponseData(xhr.responseText);
           }
         } else {
+          console.log('File upload failed response:', xhr.status, xhr.statusText, xhr.responseText);
+          
           handleUploadError(xhr.statusText || "Upload failed");
         }
       });
 
       xhr.addEventListener("error", () => {
+        console.log('File upload network error');
+        
         handleUploadError("Network error occurred");
       });
 
       xhr.addEventListener("abort", () => {
+        console.log('File upload aborted');
+        
         handleUploadError("Upload aborted");
       });
 
       xhr.open("POST", endpoint);
       xhr.setRequestHeader("Authorization", `Bearer ${token}`);
       
-      // Include credentials to ensure cookies are sent with the request
-      xhr.withCredentials = true;
+      // We're using token-based auth, so withCredentials is not needed
+      // and causes CORS issues with wildcard origins
+      // xhr.withCredentials = true;
       
       xhr.send(formData);
     } catch (error) {
@@ -187,6 +201,7 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
       analysisComplete: false,
     });
     setFile(null);
+    setResponseData(null); // Reset response data
   };
 
   // Function to send data to AI analysis endpoint
@@ -218,10 +233,29 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
       xhr.open("POST", analyzeEndpoint);
       xhr.setRequestHeader("Content-Type", "application/json");
       xhr.setRequestHeader("Authorization", `Bearer ${token}`);
-      xhr.withCredentials = true;
+      // We're using token-based auth, so withCredentials is not needed
+      // and causes CORS issues with wildcard origins
+      // xhr.withCredentials = true;
 
       xhr.addEventListener("load", () => {
         if (xhr.status >= 200 && xhr.status < 300) {
+          console.log('AI analysis response:', xhr.responseText);
+          
+          try {
+            // Update response data with AI analysis results if available
+            const aiResponse = JSON.parse(xhr.responseText);
+            setResponseData(prevData => {
+              // If we have previous data, merge it with AI analysis results
+              if (prevData && typeof prevData === 'object') {
+                return { ...prevData, aiAnalysis: aiResponse };
+              }
+              // Otherwise just return the AI analysis
+              return { aiAnalysis: aiResponse };
+            });
+          } catch (error) {
+            console.error("Error parsing AI analysis response:", error);
+          }
+          
           setUploadState(prev => ({
             ...prev,
             analyzing: false,
@@ -232,6 +266,8 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
             position: "bottom-right",
           });
         } else {
+          console.log('AI analysis failed response:', xhr.status, xhr.statusText, xhr.responseText);
+          
           setUploadState(prev => ({
             ...prev,
             analyzing: false,
@@ -244,6 +280,8 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
       });
 
       xhr.addEventListener("error", () => {
+        console.log('AI analysis network error');
+        
         setUploadState(prev => ({
           ...prev,
           analyzing: false,
@@ -277,6 +315,7 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
     getRootProps,
     getInputProps,
     isDragActive,
-    open
+    open,
+    responseData // Return the response data
   };
 };

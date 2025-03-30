@@ -1,4 +1,5 @@
 import React from "react";
+import { useAtom } from "jotai";
 import {
   Home,
   CreditCard,
@@ -11,16 +12,17 @@ import {
   Moon,
   Sun,
 } from "lucide-react";
+import { financialDataAtom, isDataLoadedAtom } from "@/store/atoms";
 
 interface SidebarProps {
   isMobileMenuOpen: boolean;
   setIsMobileMenuOpen: (open: boolean) => void;
   activePage: string;
   setActivePage: (page: string) => void;
-  isLoggedIn: boolean;
-  setIsLoggedIn: (loggedIn: boolean) => void;
   darkMode: boolean;
   setDarkMode: (darkMode: boolean) => void;
+  isLoggedIn?: boolean;
+  setIsLoggedIn?: (isLoggedIn: boolean) => void;
 }
 
 interface MenuItem {
@@ -29,16 +31,19 @@ interface MenuItem {
   icon: React.ReactNode;
 }
 
-export default function Sidebar({
+const Sidebar = ({
   isMobileMenuOpen,
   setIsMobileMenuOpen,
   activePage,
   setActivePage,
-  isLoggedIn,
-  setIsLoggedIn,
   darkMode,
   setDarkMode,
-}: SidebarProps) {
+  isLoggedIn,
+  setIsLoggedIn,
+}: SidebarProps) => {
+  const [financialData] = useAtom(financialDataAtom);
+  const [isDataLoaded] = useAtom(isDataLoadedAtom);
+
   const menuItems: MenuItem[] = [
     { id: "dashboard", label: "Dashboard", icon: <Home size={20} /> },
     { id: "reporting", label: "Reports", icon: <BarChart2 size={20} /> },
@@ -76,7 +81,16 @@ export default function Sidebar({
                 <h3 className="text-sm font-medium text-white">
                   Total Balance
                 </h3>
-                <div className="mt-1 text-xl font-semibold text-white">-- </div>
+                <div className={`mt-1 text-xl font-semibold ${
+                  financialData && financialData.profit < 0 
+                    ? 'text-red-300' 
+                    : 'text-green-300'
+                }`}>
+                  {financialData && isDataLoaded 
+                    ? `GH¢${financialData.profit.toLocaleString()}`
+                    : '--'
+                  }
+                </div>
               </div>
             </div>
           </div>
@@ -141,22 +155,48 @@ export default function Sidebar({
               {darkMode ? "Light Mode" : "Dark Mode"}
             </button>
           </li>
-          <li>
-            <button
-              className="w-full flex items-center text-left py-2 px-3 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150"
-              onClick={() => {
-                console.log(`Current login status: ${isLoggedIn}`);
-                setIsLoggedIn(false);
-              }}
-            >
-              <span className="mr-3">
-                <LogOut size={20} />
-              </span>
-              Log Out
-            </button>
-          </li>
+          {isLoggedIn && (
+            <li>
+              <button
+                className="w-full flex items-center text-left py-2 px-3 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-150"
+                onClick={() => {
+                  console.log(`Current login status: ${isLoggedIn}`);
+                  setIsLoggedIn && setIsLoggedIn(false);
+                }}
+              >
+                <span className="mr-3">
+                  <LogOut size={20} />
+                </span>
+                Log Out
+              </button>
+            </li>
+          )}
         </ul>
       </nav>
+
+      <div className="mt-auto">
+        <div className="px-4 py-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setDarkMode(!darkMode)}
+                className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+              >
+                {darkMode ? (
+                  <Sun className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                ) : (
+                  <Moon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
+                )}
+              </button>
+              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {darkMode ? "Light Mode" : "Dark Mode"}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
-}
+};
+
+export default Sidebar;

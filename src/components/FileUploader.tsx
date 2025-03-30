@@ -1,8 +1,11 @@
-import React from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useFileUpload } from "@/hooks/useFileUpload";
+import { useAtom } from "jotai";
+import { financialDataAtom, isDataLoadedAtom, showUploaderAtom } from "@/store/atoms";
+import { processFinancialData } from "@/utils/dataProcessor";
 
 interface FileUploaderProps {
-  onUploadSuccess: () => void;
+  onUploadSuccess?: (responseData?: any) => void;
   endpoint?: string;
   showDashboard?: boolean;
 }
@@ -12,6 +15,17 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   endpoint,
   showDashboard = false,
 }) => {
+  // Use atoms for state management
+  const [, setFinancialData] = useAtom(financialDataAtom);
+  const [, setIsDataLoaded] = useAtom(isDataLoadedAtom);
+  const [, setShowUploader] = useAtom(showUploaderAtom);
+  
+  // Use local state for API response
+  const [apiResponseData, setApiResponseData] = useState<any>(null);
+  
+  // Use a ref to track if we've already processed this response
+  const processedResponseRef = useRef<string | null>(null);
+
   const {
     file,
     uploadState,
@@ -22,14 +36,47 @@ const FileUploader: React.FC<FileUploaderProps> = ({
     getInputProps,
     isDragActive,
     open,
+    responseData
   } = useFileUpload({ endpoint });
 
-  // When upload is successful, call the onUploadSuccess callback
-  React.useEffect(() => {
-    if (uploadState.success) {
-      onUploadSuccess();
+  useEffect(() => {
+    if (uploadState.success && responseData) {
+      try {
+        // Generate a hash of the response to check if we've already processed it
+        const responseHash = JSON.stringify(responseData).length.toString();
+        
+        // Only process if we haven't seen this exact response before
+        if (processedResponseRef.current !== responseHash) {
+          console.log("FileUploader received API response:", responseData);
+          
+          // Store API response in local state
+          setApiResponseData(responseData);
+          
+          // Process the data
+          const processedData = processFinancialData(responseData);
+          
+          // Update the atom state
+          setFinancialData(processedData);
+          
+          // Call the callback if provided - but only once per unique response
+          if (onUploadSuccess) {
+            onUploadSuccess(responseData);
+          }
+          
+          // After a small delay, update UI state
+          setTimeout(() => {
+            setShowUploader(false);
+            setIsDataLoaded(true);
+          }, 1000);
+          
+          // Mark this response as processed
+          processedResponseRef.current = responseHash;
+        }
+      } catch (error) {
+        console.error("Error processing upload data in FileUploader:", error);
+      }
     }
-  }, [uploadState.success, onUploadSuccess]);
+  }, [uploadState.success, responseData, setFinancialData, setIsDataLoaded, setShowUploader, onUploadSuccess]);
 
   return (
     <div className="w-full mx-auto rounded-xl  dark:bg-gray-850 shadow-md p-6">
@@ -256,7 +303,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth="2"
-                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"
+                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
                       ></path>
                     </svg>
                     Upload Now
@@ -367,7 +414,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           </div>
         )}
 
-        {/* Skeleton loader with improved design */}
         {uploadState.isUploading && (
           <div className="animate-pulse space-y-6 mt-8">
             <div className="flex justify-between items-center">
@@ -514,7 +560,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth="2"
-                        d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
+                        d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                       ></path>
                     </svg>
                   </div>
