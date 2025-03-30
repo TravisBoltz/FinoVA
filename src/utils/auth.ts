@@ -13,9 +13,7 @@ export const login = async (
   password: string
 ): Promise<{ success: boolean; error?: string }> => {
   try {
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
+ 
     const response = await fetch(`${API_URL}/login`, {
       method: "POST",
       headers: {
@@ -23,6 +21,8 @@ export const login = async (
         Accept: "application/json",
       },
       body: JSON.stringify({ email, password }),
+          credentials: "include", // Required to send/receive cookies
+
     });
 
     if (!response.ok) {
@@ -111,6 +111,8 @@ export const validateToken = async (): Promise<boolean> => {
  * Logout function - removes token and user data
  */
 export const logout = (): void => {
+    window.location.href = '/';
+
   localStorage.removeItem("auth_token");
   localStorage.removeItem("user_data");
 };
