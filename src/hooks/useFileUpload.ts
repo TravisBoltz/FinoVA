@@ -72,7 +72,7 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
     formData.append("file", file);
 
     // Get auth token from localStorage (fallback mechanism)
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzODYwOTQtODlhNi00ZjlmLTk4OTYtYzE2ZGExM2YzZTljIiwiZXhwIjoxNzQzMzMxMDAyLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMwNDAyfQ.5ZiXiHLAYN9Bl-AZ29dqOO7A4aM5Yutvi2wnYTUdOcY'
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZjM3MGI5MzItNzE5Zi00OWI0LTgyMjQtZThmMTJiZmY5MDI5IiwiZXhwIjoxNzQzMzMyOTA2LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMyMzA2fQ.w1cSYhDvKhAH3l1-XtlTQlfbgIkt7MOLVFzY7d8LHcQ'
     if (!token) {
       toast.error("Authentication required. Please log in again.", {
         duration: 3000,
@@ -207,7 +207,7 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
   // Function to send data to AI analysis endpoint
   const sendToAIAnalysis = async (data: any) => {
     // Use the same hardcoded token as in uploadFile
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzODYwOTQtODlhNi00ZjlmLTk4OTYtYzE2ZGExM2YzZTljIiwiZXhwIjoxNzQzMzMxMDAyLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMwNDAyfQ.5ZiXiHLAYN9Bl-AZ29dqOO7A4aM5Yutvi2wnYTUdOcY'
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZjM3MGI5MzItNzE5Zi00OWI0LTgyMjQtZThmMTJiZmY5MDI5IiwiZXhwIjoxNzQzMzMyOTA2LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMyMzA2fQ.w1cSYhDvKhAH3l1-XtlTQlfbgIkt7MOLVFzY7d8LHcQ'
     if (!token) {
       toast.error("Authentication required for AI analysis. Please log in again.", {
         duration: 3000,

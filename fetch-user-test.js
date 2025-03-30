@@ -1,8 +1,8 @@
 // Simple test script to check the API directly
 const fetchUserData = async () => {
-  const userId = "10386094-89a6-4f9f-9896-c16da13f3e9c";
+  const userId = "f370b932-719f-49b4-8224-e8f12bff9029";
   const token =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzODYwOTQtODlhNi00ZjlmLTk4OTYtYzE2ZGExM2YzZTljIiwiZXhwIjoxNzQzMzMxMDAyLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMwNDAyfQ.5ZiXiHLAYN9Bl-AZ29dqOO7A4aM5Yutvi2wnYTUdOcY";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZjM3MGI5MzItNzE5Zi00OWI0LTgyMjQtZThmMTJiZmY5MDI5IiwiZXhwIjoxNzQzMzMyOTA2LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMyMzA2fQ.w1cSYhDvKhAH3l1-XtlTQlfbgIkt7MOLVFzY7d8LHcQ";
 
   try {
     console.log("Fetching user data...");

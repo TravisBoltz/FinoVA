@@ -30,7 +30,7 @@ export const login = async (
     // Handle non-JSON responses
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
-      localStorage.setItem("auth_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzODYwOTQtODlhNi00ZjlmLTk4OTYtYzE2ZGExM2YzZTljIiwiZXhwIjoxNzQzMzMxMDAyLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMwNDAyfQ.5ZiXiHLAYN9Bl-AZ29dqOO7A4aM5Yutvi2wnYTUdOcY");
+      localStorage.setItem("auth_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZjM3MGI5MzItNzE5Zi00OWI0LTgyMjQtZThmMTJiZmY5MDI5IiwiZXhwIjoxNzQzMzMyOTA2LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMyMzA2fQ.w1cSYhDvKhAH3l1-XtlTQlfbgIkt7MOLVFzY7d8LHcQ");
       return { success: true };
     }
 
@@ -46,13 +46,13 @@ export const login = async (
       }
     } else {
       // If no token in response, use the default token
-      localStorage.setItem("auth_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzODYwOTQtODlhNi00ZjlmLTk4OTYtYzE2ZGExM2YzZTljIiwiZXhwIjoxNzQzMzMxMDAyLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMwNDAyfQ.5ZiXiHLAYN9Bl-AZ29dqOO7A4aM5Yutvi2wnYTUdOcY");
+      localStorage.setItem("auth_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZjM3MGI5MzItNzE5Zi00OWI0LTgyMjQtZThmMTJiZmY5MDI5IiwiZXhwIjoxNzQzMzMyOTA2LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMyMzA2fQ.w1cSYhDvKhAH3l1-XtlTQlfbgIkt7MOLVFzY7d8LHcQ");
     }
 
     return { success: true };
   } catch (error) {
     // Fallback for demo
-    localStorage.setItem("auth_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzODYwOTQtODlhNi00ZjlmLTk4OTYtYzE2ZGExM2YzZTljIiwiZXhwIjoxNzQzMzMxMDAyLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMwNDAyfQ.5ZiXiHLAYN9Bl-AZ29dqOO7A4aM5Yutvi2wnYTUdOcY");
+    localStorage.setItem("auth_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZjM3MGI5MzItNzE5Zi00OWI0LTgyMjQtZThmMTJiZmY5MDI5IiwiZXhwIjoxNzQzMzMyOTA2LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMyMzA2fQ.w1cSYhDvKhAH3l1-XtlTQlfbgIkt7MOLVFzY7d8LHcQ");
     return { success: true };
   }
 };

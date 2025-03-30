@@ -8,10 +8,10 @@ export default function Profile() {
 
   // Fallback user data structure
   const fallbackUserData = {
-    id: "10386094-89a6-4f9f-9896-c16da13f3e9c",
-    first_name: "Tre",
-    last_name: "Johnson",
-    email: "alex@company.com",
+    id: "f370b932-719f-49b4-8224-e8f12bff9029",
+    first_name: "Faridu",
+    last_name: "Musah",
+    email: "travisboltz@gmail.com",
     avatar_url: null,
   };
 
@@ -43,8 +43,8 @@ export default function Profile() {
         // Try to fetch from API first
         try {
           const storedToken =
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzODYwOTQtODlhNi00ZjlmLTk4OTYtYzE2ZGExM2YzZTljIiwiZXhwIjoxNzQzMzMxMDAyLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMwNDAyfQ.5ZiXiHLAYN9Bl-AZ29dqOO7A4aM5Yutvi2wnYTUdOcY";
-          const userId = "10386094-89a6-4f9f-9896-c16da13f3e9c";
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZjM3MGI5MzItNzE5Zi00OWI0LTgyMjQtZThmMTJiZmY5MDI5IiwiZXhwIjoxNzQzMzMyOTA2LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMyMzA2fQ.w1cSYhDvKhAH3l1-XtlTQlfbgIkt7MOLVFzY7d8LHcQ";
+          const userId = "f370b932-719f-49b4-8224-e8f12bff9029";
 
           // Set a timeout to prevent hanging on API requests
           const controller = new AbortController();
@@ -272,22 +272,6 @@ export default function Profile() {
                       <p className="text-base font-medium text-gray-900 dark:text-gray-100 truncate">
                         {userData.id}
                       </p>
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                        Role / Title
-                      </h4>
-                      <p className="text-base font-medium text-gray-900 dark:text-gray-100">
-                        {additionalUserData.role}
-                      </p>
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                        Avatar URL
-                      </h4>
-                      {/* <p className="text-base font-medium text-gray-900 dark:text-gray-100">
-                        {userData.avatar_url || "No avatar set"}
-                      </p> */}
                     </div>
                   </div>
                 </div>

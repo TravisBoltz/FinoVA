@@ -20,7 +20,7 @@ interface SidebarProps {
   activePage: string;
   setActivePage: (page: string) => void;
   darkMode: boolean;
-  setDarkMode: (darkMode: boolean) => void;
+  setDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
   isLoggedIn?: boolean;
   setIsLoggedIn?: (isLoggedIn: boolean) => void;
 }
@@ -148,7 +148,7 @@ const Sidebar = ({
           <li>
             <button
               className="w-full flex items-center text-left py-2 px-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-900 dark:text-gray-100 transition-colors duration-150"
-              onClick={() => setDarkMode(!darkMode)}
+              onClick={() => setDarkMode((prev) => !prev)}
             >
               <span className="mr-3">
                 {darkMode ? <Sun size={20} /> : <Moon size={20} />}

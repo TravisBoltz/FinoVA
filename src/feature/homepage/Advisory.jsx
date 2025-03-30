@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useAtom } from "jotai";
-import { apiResponseAtom, financialDataAtom, isDataLoadedAtom } from "@/store/atoms";
+import {
+  apiResponseAtom,
+  financialDataAtom,
+  isDataLoadedAtom,
+} from "@/store/atoms";
 
 export default function Advisory() {
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -17,23 +21,34 @@ export default function Advisory() {
     // Try to extract advisories from AI analysis
     try {
       const aiData = apiResponse.aiAnalysis;
-      
+
       // If the AI analysis has recommendations or advisories, use them
       if (aiData.recommendations || aiData.advisories) {
-        return (aiData.recommendations || aiData.advisories || []).map((item, index) => ({
-          id: index + 1,
-          title: item.title || item.name || `Financial Recommendation ${index + 1}`,
-          description: item.description || item.details || item.text || "",
-          impact: item.impact || item.priority || "medium",
-          category: item.category || item.type || "general",
-          date: item.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-        }));
+        return (aiData.recommendations || aiData.advisories || []).map(
+          (item, index) => ({
+            id: index + 1,
+            title:
+              item.title ||
+              item.name ||
+              `Financial Recommendation ${index + 1}`,
+            description: item.description || item.details || item.text || "",
+            impact: item.impact || item.priority || "medium",
+            category: item.category || item.type || "general",
+            date:
+              item.date ||
+              new Date().toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              }),
+          })
+        );
       }
-      
+
       // If there's no structured recommendations, try to create some based on financial data
       if (financialData) {
         const advisories = [];
-        
+
         // Add emergency fund recommendation if total revenue is available
         if (financialData.totalRevenue > 0) {
           advisories.push({
@@ -42,29 +57,43 @@ export default function Advisory() {
             description: `Based on your current revenue of ${financialData.totalRevenue.toLocaleString()}, we recommend setting aside 3-6 months of expenses in an emergency fund.`,
             impact: "high",
             category: "savings",
-            date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+            date: new Date().toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            }),
           });
         }
-        
+
         // Add profit margin recommendation if profit and revenue are available
         if (financialData.profit && financialData.totalRevenue) {
-          const profitMargin = (financialData.profit / financialData.totalRevenue) * 100;
-          const impact = profitMargin < 15 ? "high" : profitMargin < 25 ? "medium" : "low";
-          
+          const profitMargin =
+            (financialData.profit / financialData.totalRevenue) * 100;
+          const impact =
+            profitMargin < 15 ? "high" : profitMargin < 25 ? "medium" : "low";
+
           advisories.push({
             id: 2,
-            title: `${profitMargin < 20 ? "Improve" : "Maintain"} your profit margin`,
-            description: `Your current profit margin is ${profitMargin.toFixed(1)}%. ${
-              profitMargin < 20 
-                ? "Consider strategies to increase revenue or reduce expenses to improve profitability." 
+            title: `${
+              profitMargin < 20 ? "Improve" : "Maintain"
+            } your profit margin`,
+            description: `Your current profit margin is ${profitMargin.toFixed(
+              1
+            )}%. ${
+              profitMargin < 20
+                ? "Consider strategies to increase revenue or reduce expenses to improve profitability."
                 : "You're doing well, but continue monitoring to maintain this performance."
             }`,
             impact,
             category: "profitability",
-            date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+            date: new Date().toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            }),
           });
         }
-        
+
         // Add expense management recommendation if expenses are available
         if (financialData.totalExpenses > 0) {
           advisories.push({
@@ -73,31 +102,43 @@ export default function Advisory() {
             description: `Regular review of your ${financialData.totalExpenses.toLocaleString()} in expenses can identify opportunities for cost reduction and improved efficiency.`,
             impact: "medium",
             category: "expenses",
-            date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+            date: new Date().toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            }),
           });
         }
-        
+
         return advisories;
       }
     } catch (error) {
       console.error("Error generating advisories:", error);
     }
-    
+
     // Fallback to empty array if we couldn't generate advisories
     return [];
   };
 
   // Use generated advisories or fallback to default ones if no data
-  const advisories = isDataLoaded && apiResponse ? generateAdvisories() : [
-    {
-      id: 1,
-      title: "Upload financial data to get personalized recommendations",
-      description: "Upload your financial statements to receive AI-powered insights and recommendations tailored to your business.",
-      impact: "high",
-      category: "general",
-      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-    }
-  ];
+  const advisories =
+    isDataLoaded && apiResponse
+      ? generateAdvisories()
+      : [
+          {
+            id: 1,
+            title: "Upload financial data to get personalized recommendations",
+            description:
+              "Upload your financial statements to receive AI-powered insights and recommendations tailored to your business.",
+            impact: "high",
+            category: "general",
+            date: new Date().toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+            }),
+          },
+        ];
 
   const filteredAdvisories =
     selectedCategory === "all"
@@ -123,11 +164,14 @@ export default function Advisory() {
     if (!advisories.length) {
       return { opportunities: 0, risks: 0, healthScore: 0 };
     }
-    
-    const opportunities = advisories.filter(a => a.impact === "low").length;
-    const risks = advisories.filter(a => a.impact === "high").length;
-    const healthScore = Math.min(100, Math.max(0, 70 + (opportunities * 5) - (risks * 10)));
-    
+
+    const opportunities = advisories.filter((a) => a.impact === "low").length;
+    const risks = advisories.filter((a) => a.impact === "high").length;
+    const healthScore = Math.min(
+      100,
+      Math.max(0, 70 + opportunities * 5 - risks * 10)
+    );
+
     return { opportunities, risks, healthScore };
   };
 
@@ -140,12 +184,14 @@ export default function Advisory() {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold">Financial Advisory</h1>
         </div>
-        
+
         {/* Loading indicator */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 p-8">
           <div className="flex flex-col items-center justify-center space-y-4">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-            <p className="text-gray-600 dark:text-gray-400">Loading financial insights...</p>
+            <p className="text-gray-600 dark:text-gray-400">
+              Loading financial insights...
+            </p>
           </div>
         </div>
       </div>
@@ -195,7 +241,11 @@ export default function Advisory() {
                 {healthScore}/100
               </p>
               <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
-                {healthScore >= 80 ? "Good condition" : healthScore >= 60 ? "Fair condition" : "Needs attention"}
+                {healthScore >= 80
+                  ? "Good condition"
+                  : healthScore >= 60
+                  ? "Fair condition"
+                  : "Needs attention"}
               </p>
             </div>
 
@@ -204,7 +254,12 @@ export default function Advisory() {
                 Next Review
               </p>
               <p className="text-2xl font-bold text-purple-800 dark:text-purple-300 mt-1">
-                {new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                {new Date(
+                  Date.now() + 15 * 24 * 60 * 60 * 1000
+                ).toLocaleDateString("en-US", {
+                  month: "short",
+                  day: "numeric",
+                })}
               </p>
               <p className="text-sm text-purple-600 dark:text-purple-400 mt-1">
                 Scheduled financial review
@@ -268,16 +323,17 @@ export default function Advisory() {
                         </span>
                       </div>
                     </div>
-                    <button className="ml-4 px-3 py-1 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white text-sm font-medium rounded-md">
-                      Take Action
-                    </button>
                   </div>
                 </div>
               ))
             ) : (
               <div className="text-center py-8">
-                <p className="text-gray-500 dark:text-gray-400">No recommendations available for this category.</p>
-                <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">Try selecting a different category or upload financial data.</p>
+                <p className="text-gray-500 dark:text-gray-400">
+                  No recommendations available for this category.
+                </p>
+                <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">
+                  Try selecting a different category or upload financial data.
+                </p>
               </div>
             )}
           </div>
@@ -291,18 +347,20 @@ export default function Advisory() {
           {apiResponse && apiResponse.aiAnalysis ? (
             <div className="p-4 bg-blue-50 dark:bg-blue-900/10 bg-opacity-50 rounded-lg mb-4">
               <p className="text-sm text-blue-800 dark:text-blue-300">
-                {apiResponse.aiAnalysis.forecast || apiResponse.aiAnalysis.summary || 
-                "Based on your current financial patterns and market trends, our AI predicts stable growth over the next quarter. Continue monitoring cash flow and consider the recommendations above to optimize your financial health."}
+                {apiResponse.aiAnalysis.forecast ||
+                  apiResponse.aiAnalysis.summary ||
+                  "Based on your current financial patterns and market trends, our AI predicts stable growth over the next quarter. Continue monitoring cash flow and consider the recommendations above to optimize your financial health."}
               </p>
             </div>
           ) : (
             <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mb-4">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Upload your financial data to receive AI-powered forecasts and insights.
+                Upload your financial data to receive AI-powered forecasts and
+                insights.
               </p>
             </div>
           )}
-          
+
           {/* Rest of the AI Financial Forecast section remains the same */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
@@ -315,7 +373,9 @@ export default function Advisory() {
                     <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">
                       {financialData.totalRevenue.toLocaleString()}
                     </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Current Revenue</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Current Revenue
+                    </p>
                     <p className="text-green-600 dark:text-green-400 mt-2">
                       +5% projected growth
                     </p>
@@ -338,7 +398,9 @@ export default function Advisory() {
                     <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">
                       {financialData.totalExpenses.toLocaleString()}
                     </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">Current Expenses</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Current Expenses
+                    </p>
                     <p className="text-red-600 dark:text-red-400 mt-2">
                       +2% projected increase
                     </p>
