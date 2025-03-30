@@ -14,6 +14,8 @@ interface UploadState {
   progress: number;
   error: string | null;
   success: boolean;
+  analyzing: boolean;
+  analysisComplete: boolean;
 }
 
 export const useFileUpload = (options?: UseFileUploadOptions) => {
@@ -23,6 +25,8 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
     progress: 0,
     error: null,
     success: false,
+    analyzing: false,
+    analysisComplete: false,
   });
 
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
@@ -62,7 +66,7 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
       return;
     }
 
-    const endpoint = options?.endpoint || "https://e5ed-102-208-89-6.ngrok-free.app/api/v1/upload";
+    const endpoint = options?.endpoint || "https://e5ed-102-208-89-6.ngrok-free.app/api/v1/convert-excel-to-json";
     const formData = new FormData();
     formData.append("file", file);
 
@@ -82,6 +86,8 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
         progress: 0,
         error: null,
         success: false,
+        analyzing: false,
+        analysisComplete: false,
       });
 
       // Create an XMLHttpRequest to track upload progress
@@ -104,11 +110,21 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
             progress: 100,
             error: null,
             success: true,
+            analyzing: false,
+            analysisComplete: false,
           });
           toast.success("File uploaded successfully!", {
             duration: 3000,
             position: "bottom-right",
           });
+          
+          // Send the response to the AI analysis endpoint
+          try {
+            const responseData = JSON.parse(xhr.responseText);
+            sendToAIAnalysis(responseData);
+          } catch (error) {
+            console.error("Error parsing upload response:", error);
+          }
         } else {
           handleUploadError(xhr.statusText || "Upload failed");
         }
@@ -140,6 +156,8 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
       progress: 0,
       error: null,
       success: false,
+      analyzing: false,
+      analysisComplete: false,
     });
     setFile(null);
   };
@@ -150,6 +168,8 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
       progress: 0,
       error: errorMessage,
       success: false,
+      analyzing: false,
+      analysisComplete: false,
     });
     toast.error(`Upload failed: ${errorMessage}`, {
       duration: 5000,
@@ -163,8 +183,88 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
       progress: 0,
       error: null,
       success: false,
+      analyzing: false,
+      analysisComplete: false,
     });
     setFile(null);
+  };
+
+  // Function to send data to AI analysis endpoint
+  const sendToAIAnalysis = async (data: any) => {
+    // Get auth token from localStorage (fallback mechanism)
+    const token = localStorage.getItem("auth_token");
+    if (!token) {
+      toast.error("Authentication required for AI analysis. Please log in again.", {
+        duration: 3000,
+        position: "bottom-right",
+      });
+      return;
+    }
+
+    try {
+      setUploadState(prev => ({
+        ...prev,
+        analyzing: true,
+      }));
+
+      toast.info("Analyzing your financial data...", {
+        duration: 3000,
+        position: "bottom-right",
+      });
+
+      const analyzeEndpoint = "https://e5ed-102-208-89-6.ngrok-free.app/api/v1/ai/analyze";
+      
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", analyzeEndpoint);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+      xhr.withCredentials = true;
+
+      xhr.addEventListener("load", () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          setUploadState(prev => ({
+            ...prev,
+            analyzing: false,
+            analysisComplete: true,
+          }));
+          toast.success("AI analysis complete!", {
+            duration: 3000,
+            position: "bottom-right",
+          });
+        } else {
+          setUploadState(prev => ({
+            ...prev,
+            analyzing: false,
+          }));
+          toast.error(`AI analysis failed: ${xhr.statusText || "Unknown error"}`, {
+            duration: 5000,
+            position: "bottom-right",
+          });
+        }
+      });
+
+      xhr.addEventListener("error", () => {
+        setUploadState(prev => ({
+          ...prev,
+          analyzing: false,
+        }));
+        toast.error("Network error during AI analysis", {
+          duration: 5000,
+          position: "bottom-right",
+        });
+      });
+
+      xhr.send(JSON.stringify(data));
+    } catch (error) {
+      setUploadState(prev => ({
+        ...prev,
+        analyzing: false,
+      }));
+      toast.error(`AI analysis error: ${error instanceof Error ? error.message : "Unknown error"}`, {
+        duration: 5000,
+        position: "bottom-right",
+      });
+    }
   };
 
   return {

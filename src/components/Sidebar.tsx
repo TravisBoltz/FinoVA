@@ -23,15 +23,15 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import AdvisoryComponent from "@/feature/homepage/Advisory";
-import CreditScore from "@/feature/homepage/CreditScire";
-import Reporting from "@/feature/homepage/Reports";
+import CreditScore from "@/feature/homepage/CreditScore";
+import Reporting from "@/feature/homepage/Reporting";
 import Profile from "@/feature/homepage/Profile";
-import Intro from "@/feature/homepage/Intro";
+import Intro from "@/feature/homepage/Dashboard";
 import Header from "./Header";
 import { Footer } from "./Footer";
 
 // Define placeholder components for each menu item
-const Dashboard = () => <Intro />;
+const Dashboard = () => <Dashboard />;
 const Reports = () => <Reporting />;
 const Advisory = () => <AdvisoryComponent />;
 const CreditCards = () => <CreditScore />;

@@ -32,7 +32,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({
   }, [uploadState.success, onUploadSuccess]);
 
   return (
-    <div className="w-full mx-auto rounded-xl bg-white dark:bg-gray-850 shadow-md p-6">
+    <div className="w-full mx-auto rounded-xl  dark:bg-gray-850 shadow-md p-6">
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-50 mb-2">
           {showDashboard ? "Update Financial Data" : "Upload Financial Data"}
@@ -393,34 +393,6 @@ const FileUploader: React.FC<FileUploaderProps> = ({
           </div>
         )}
 
-        {uploadState.success && (
-          <div className="mt-4 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 rounded-xl">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <svg
-                  className="h-5 w-5 text-green-500"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium">
-                  Your file has been successfully uploaded!
-                </p>
-                <p className="text-xs mt-1">
-                  Your financial data is now being processed and analyzed.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
         {uploadState.error && (
           <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 rounded-xl">
             <div className="flex items-center">
@@ -466,6 +438,106 @@ const FileUploader: React.FC<FileUploaderProps> = ({
               </svg>
               Try again
             </button>
+          </div>
+        )}
+
+        {uploadState.success && (
+          <div className="border rounded-xl p-5 bg-white dark:bg-gray-800 shadow-sm">
+            <div className="flex flex-col space-y-4">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-full">
+                  <svg
+                    className="w-6 h-6 text-green-600 dark:text-green-500"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M5 13l4 4L19 7"
+                    ></path>
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    Upload Complete
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Your file has been uploaded successfully.
+                  </p>
+                </div>
+              </div>
+              
+              {uploadState.analyzing && (
+                <div className="flex items-center space-x-3 mt-4">
+                  <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-full animate-pulse">
+                    <svg
+                      className="w-6 h-6 text-blue-600 dark:text-blue-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                      AI Analysis in Progress
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Our AI is analyzing your financial data...
+                    </p>
+                  </div>
+                </div>
+              )}
+              
+              {uploadState.analysisComplete && (
+                <div className="flex items-center space-x-3 mt-4">
+                  <div className="p-2 bg-purple-100 dark:bg-purple-900/20 rounded-full">
+                    <svg
+                      className="w-6 h-6 text-purple-600 dark:text-purple-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z"
+                      ></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                      AI Analysis Complete
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Your financial insights are ready to view.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex space-x-3 mt-2">
+                <button
+                  onClick={resetUploadState}
+                  className="px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 border border-blue-600 dark:border-blue-400 rounded-md hover:bg-blue-50 dark:hover:bg-blue-900/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                >
+                  Upload Another File
+                </button>
+              </div>
+            </div>
           </div>
         )}
       </div>

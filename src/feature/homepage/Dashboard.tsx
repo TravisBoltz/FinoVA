@@ -150,9 +150,9 @@ const Dashboard = ({
 
       {/* Always show FileUploader, but pass showDashboard prop when data is loaded */}
       <div className={isDataLoaded && !showUploader ? "mb-8" : ""}>
-        <FileUploader 
-          onUploadSuccess={handleUploadSuccess} 
-          endpoint="https://e5ed-102-208-89-6.ngrok-free.app/api/v1/upload"
+        <FileUploader
+          onUploadSuccess={handleUploadSuccess}
+          endpoint="https://e5ed-102-208-89-6.ngrok-free.app/api/v1/convert-excel-to-json"
           showDashboard={isDataLoaded && !showUploader}
         />
       </div>
@@ -290,72 +290,75 @@ const Dashboard = ({
                 Recent Transactions
               </h3>
               <div className="space-y-3">
-                {financialData.recentTransactions.map((transaction: Transaction, index) => {
-                  const transactionType = transaction.amount > 0 ? "income" : "expense";
+                {financialData.recentTransactions.map(
+                  (transaction: Transaction, index) => {
+                    const transactionType =
+                      transaction.amount > 0 ? "income" : "expense";
 
-                  return (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0"
-                    >
-                      <div className="flex items-center">
-                        <div
-                          className={`h-8 w-8 rounded-full flex items-center justify-center ${
+                    return (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between py-2 border-b border-gray-100 dark:border-gray-700 last:border-0"
+                      >
+                        <div className="flex items-center">
+                          <div
+                            className={`h-8 w-8 rounded-full flex items-center justify-center ${
+                              transactionType === "income"
+                                ? "bg-green-100 dark:bg-green-900/20 text-green-500"
+                                : "bg-red-100 dark:bg-red-900/20 text-red-500"
+                            }`}
+                          >
+                            {transactionType === "income" ? (
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            ) : (
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="h-4 w-4"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            )}
+                          </div>
+                          <div className="ml-3">
+                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                              {transaction.description}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {transaction.date}
+                            </p>
+                          </div>
+                        </div>
+                        <p
+                          className={`text-sm font-semibold ${
                             transactionType === "income"
-                              ? "bg-green-100 dark:bg-green-900/20 text-green-500"
-                              : "bg-red-100 dark:bg-red-900/20 text-red-500"
+                              ? "text-green-500"
+                              : "text-red-500"
                           }`}
                         >
-                          {transactionType === "income" ? (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M16.707 10.293a1 1 0 010 1.414l-6 6a1 1 0 01-1.414 0l-6-6a1 1 0 111.414-1.414L9 14.586V3a1 1 0 012 0v11.586l4.293-4.293a1 1 0 011.414 0z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          ) : (
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                            >
-                              <path
-                                fillRule="evenodd"
-                                d="M3.293 9.707a1 1 0 010-1.414l6-6a1 1 0 011.414 0l6 6a1 1 0 01-1.414 1.414L11 5.414V17a1 1 0 11-2 0V5.414L4.707 9.707a1 1 0 01-1.414 0z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                          )}
-                        </div>
-                        <div className="ml-3">
-                          <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                            {transaction.description}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            {transaction.date}
-                          </p>
-                        </div>
+                          {transactionType === "income" ? "+" : "-"}GH¢
+                          {Math.abs(transaction.amount).toLocaleString()}
+                        </p>
                       </div>
-                      <p
-                        className={`text-sm font-semibold ${
-                          transactionType === "income"
-                            ? "text-green-500"
-                            : "text-red-500"
-                        }`}
-                      >
-                        {transactionType === "income" ? "+" : "-"}GH¢
-                        {Math.abs(transaction.amount).toLocaleString()}
-                      </p>
-                    </div>
-                  );
-                })}
+                    );
+                  }
+                )}
               </div>
               <button className="mt-3 text-sm text-blue-600 dark:text-blue-500 hover:underline">
                 View all transactions

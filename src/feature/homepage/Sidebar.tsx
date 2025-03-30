@@ -1,15 +1,15 @@
 import React from "react";
-import { 
-  Home, 
-  CreditCard, 
-  BarChart2, 
-  FileText, 
-  User, 
-  LogOut, 
+import {
+  Home,
+  CreditCard,
+  BarChart2,
+  FileText,
+  User,
+  LogOut,
   DollarSign,
   X,
   Moon,
-  Sun
+  Sun,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -29,15 +29,15 @@ interface MenuItem {
   icon: React.ReactNode;
 }
 
-export default function Sidebar({ 
-  isMobileMenuOpen, 
-  setIsMobileMenuOpen, 
-  activePage, 
+export default function Sidebar({
+  isMobileMenuOpen,
+  setIsMobileMenuOpen,
+  activePage,
   setActivePage,
   isLoggedIn,
   setIsLoggedIn,
   darkMode,
-  setDarkMode
+  setDarkMode,
 }: SidebarProps) {
   const menuItems: MenuItem[] = [
     { id: "dashboard", label: "Dashboard", icon: <Home size={20} /> },
@@ -76,9 +76,7 @@ export default function Sidebar({
                 <h3 className="text-sm font-medium text-white">
                   Total Balance
                 </h3>
-                <div className="mt-1 text-xl font-semibold text-white">
-                  GH¢24,500
-                </div>
+                <div className="mt-1 text-xl font-semibold text-white">-- </div>
               </div>
             </div>
           </div>
@@ -103,9 +101,7 @@ export default function Sidebar({
                   if (isMobileMenuOpen) setIsMobileMenuOpen(false);
                 }}
               >
-                <span className="mr-3">
-                  {item.icon}
-                </span>
+                <span className="mr-3">{item.icon}</span>
                 {item.label}
               </button>
             </li>
