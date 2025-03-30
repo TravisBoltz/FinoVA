@@ -1,13 +1,8 @@
-/**
- * Simple authentication utility functions
- */
 
 // API URL
-const API_URL = "/api/v1/auth";
+const API_URL = "https://e5ed-102-208-89-6.ngrok-free.app/api/v1/auth";
 
-/**
- * Login function - handles authentication with email and password
- */
+
 export const login = async (
   email: string,
   password: string
@@ -35,7 +30,7 @@ export const login = async (
     // Handle non-JSON responses
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
-      localStorage.setItem("auth_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzODYwOTQtODlhNi00ZjlmLTk4OTYtYzE2ZGExM2YzZTljIiwiZXhwIjoxNzQzMzI2MTY2LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzI1NTY2fQ.8cU7Vn62o-_2cZdyoXQFWx01iOFY0xsItOQEAZs6DLM");
+      localStorage.setItem("auth_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzODYwOTQtODlhNi00ZjlmLTk4OTYtYzE2ZGExM2YzZTljIiwiZXhwIjoxNzQzMzMxMDAyLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMwNDAyfQ.5ZiXiHLAYN9Bl-AZ29dqOO7A4aM5Yutvi2wnYTUdOcY");
       return { success: true };
     }
 
@@ -51,13 +46,13 @@ export const login = async (
       }
     } else {
       // If no token in response, use the default token
-      localStorage.setItem("auth_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzODYwOTQtODlhNi00ZjlmLTk4OTYtYzE2ZGExM2YzZTljIiwiZXhwIjoxNzQzMzI2MTY2LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzI1NTY2fQ.8cU7Vn62o-_2cZdyoXQFWx01iOFY0xsItOQEAZs6DLM");
+      localStorage.setItem("auth_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzODYwOTQtODlhNi00ZjlmLTk4OTYtYzE2ZGExM2YzZTljIiwiZXhwIjoxNzQzMzMxMDAyLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMwNDAyfQ.5ZiXiHLAYN9Bl-AZ29dqOO7A4aM5Yutvi2wnYTUdOcY");
     }
 
     return { success: true };
   } catch (error) {
     // Fallback for demo
-    localStorage.setItem("auth_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzODYwOTQtODlhNi00ZjlmLTk4OTYtYzE2ZGExM2YzZTljIiwiZXhwIjoxNzQzMzI2MTY2LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzI1NTY2fQ.8cU7Vn62o-_2cZdyoXQFWx01iOFY0xsItOQEAZs6DLM");
+    localStorage.setItem("auth_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzODYwOTQtODlhNi00ZjlmLTk4OTYtYzE2ZGExM2YzZTljIiwiZXhwIjoxNzQzMzMxMDAyLCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMwNDAyfQ.5ZiXiHLAYN9Bl-AZ29dqOO7A4aM5Yutvi2wnYTUdOcY");
     return { success: true };
   }
 };

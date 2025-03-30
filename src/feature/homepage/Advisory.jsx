@@ -1,54 +1,102 @@
 import { useState } from "react";
+import { useAtom } from "jotai";
+import { apiResponseAtom, financialDataAtom, isDataLoadedAtom } from "@/store/atoms";
+
 export default function Advisory() {
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [apiResponse] = useAtom(apiResponseAtom);
+  const [financialData] = useAtom(financialDataAtom);
+  const [isDataLoaded] = useAtom(isDataLoadedAtom);
 
-  // Advisory data
-  const advisories = [
+  // Generate advisories based on API response data if available
+  const generateAdvisories = () => {
+    if (!apiResponse || !apiResponse.aiAnalysis) {
+      return [];
+    }
+
+    // Try to extract advisories from AI analysis
+    try {
+      const aiData = apiResponse.aiAnalysis;
+      
+      // If the AI analysis has recommendations or advisories, use them
+      if (aiData.recommendations || aiData.advisories) {
+        return (aiData.recommendations || aiData.advisories || []).map((item, index) => ({
+          id: index + 1,
+          title: item.title || item.name || `Financial Recommendation ${index + 1}`,
+          description: item.description || item.details || item.text || "",
+          impact: item.impact || item.priority || "medium",
+          category: item.category || item.type || "general",
+          date: item.date || new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+        }));
+      }
+      
+      // If there's no structured recommendations, try to create some based on financial data
+      if (financialData) {
+        const advisories = [];
+        
+        // Add emergency fund recommendation if total revenue is available
+        if (financialData.totalRevenue > 0) {
+          advisories.push({
+            id: 1,
+            title: "Establish an emergency fund",
+            description: `Based on your current revenue of ${financialData.totalRevenue.toLocaleString()}, we recommend setting aside 3-6 months of expenses in an emergency fund.`,
+            impact: "high",
+            category: "savings",
+            date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+          });
+        }
+        
+        // Add profit margin recommendation if profit and revenue are available
+        if (financialData.profit && financialData.totalRevenue) {
+          const profitMargin = (financialData.profit / financialData.totalRevenue) * 100;
+          const impact = profitMargin < 15 ? "high" : profitMargin < 25 ? "medium" : "low";
+          
+          advisories.push({
+            id: 2,
+            title: `${profitMargin < 20 ? "Improve" : "Maintain"} your profit margin`,
+            description: `Your current profit margin is ${profitMargin.toFixed(1)}%. ${
+              profitMargin < 20 
+                ? "Consider strategies to increase revenue or reduce expenses to improve profitability." 
+                : "You're doing well, but continue monitoring to maintain this performance."
+            }`,
+            impact,
+            category: "profitability",
+            date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+          });
+        }
+        
+        // Add expense management recommendation if expenses are available
+        if (financialData.totalExpenses > 0) {
+          advisories.push({
+            id: 3,
+            title: "Review expense categories",
+            description: `Regular review of your ${financialData.totalExpenses.toLocaleString()} in expenses can identify opportunities for cost reduction and improved efficiency.`,
+            impact: "medium",
+            category: "expenses",
+            date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+          });
+        }
+        
+        return advisories;
+      }
+    } catch (error) {
+      console.error("Error generating advisories:", error);
+    }
+    
+    // Fallback to empty array if we couldn't generate advisories
+    return [];
+  };
+
+  // Use generated advisories or fallback to default ones if no data
+  const advisories = isDataLoaded && apiResponse ? generateAdvisories() : [
     {
       id: 1,
-      title: "Increase your emergency fund",
-      description:
-        "Based on your current expenses, we recommend increasing your emergency fund to cover 6 months of expenses.",
+      title: "Upload financial data to get personalized recommendations",
+      description: "Upload your financial statements to receive AI-powered insights and recommendations tailored to your business.",
       impact: "high",
-      category: "savings",
-      date: "Mar 20, 2025",
-    },
-    {
-      id: 2,
-      title: "Consider refinancing your business loan",
-      description:
-        "Current rates are 1.5% lower than your existing loan. Refinancing could save approximately GH¢12,000 over the loan term.",
-      impact: "high",
-      category: "debt",
-      date: "Mar 18, 2025",
-    },
-    {
-      id: 3,
-      title: "Optimize your tax deductions",
-      description:
-        "Your business may qualify for additional tax deductions. Schedule a consultation with a tax professional.",
-      impact: "medium",
-      category: "tax",
-      date: "Mar 15, 2025",
-    },
-    {
-      id: 4,
-      title: "Diversify your investment portfolio",
-      description:
-        "Your portfolio is heavily weighted in technology stocks. Consider diversifying to reduce sector-specific risk.",
-      impact: "medium",
-      category: "investment",
-      date: "Mar 12, 2025",
-    },
-    {
-      id: 5,
-      title: "Review your insurance coverage",
-      description:
-        "Your business has grown significantly but your liability insurance hasn't been updated in 2 years.",
-      impact: "low",
-      category: "insurance",
-      date: "Mar 10, 2025",
-    },
+      category: "general",
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+    }
   ];
 
   const filteredAdvisories =
@@ -70,6 +118,40 @@ export default function Advisory() {
     }
   };
 
+  // Calculate summary metrics
+  const getSummaryMetrics = () => {
+    if (!advisories.length) {
+      return { opportunities: 0, risks: 0, healthScore: 0 };
+    }
+    
+    const opportunities = advisories.filter(a => a.impact === "low").length;
+    const risks = advisories.filter(a => a.impact === "high").length;
+    const healthScore = Math.min(100, Math.max(0, 70 + (opportunities * 5) - (risks * 10)));
+    
+    return { opportunities, risks, healthScore };
+  };
+
+  const { opportunities, risks, healthScore } = getSummaryMetrics();
+
+  // Loading state
+  if (!isDataLoaded && apiResponse === null) {
+    return (
+      <div className="p-6 space-y-6 text-gray-900 dark:text-gray-100">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold">Financial Advisory</h1>
+        </div>
+        
+        {/* Loading indicator */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700 p-8">
+          <div className="flex flex-col items-center justify-center space-y-4">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+            <p className="text-gray-600 dark:text-gray-400">Loading financial insights...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-6 space-y-6 text-gray-900 dark:text-gray-100">
       <div className="flex justify-between items-center">
@@ -86,7 +168,7 @@ export default function Advisory() {
                 Opportunities
               </p>
               <p className="text-2xl font-bold text-green-800 dark:text-green-300 mt-1">
-                3
+                {opportunities}
               </p>
               <p className="text-sm text-green-600 dark:text-green-400 mt-1">
                 Current financial opportunities
@@ -98,7 +180,7 @@ export default function Advisory() {
                 Risks
               </p>
               <p className="text-2xl font-bold text-red-800 dark:text-red-300 mt-1">
-                2
+                {risks}
               </p>
               <p className="text-sm text-red-600 dark:text-red-400 mt-1">
                 Issues requiring attention
@@ -110,10 +192,10 @@ export default function Advisory() {
                 Financial Health Score
               </p>
               <p className="text-2xl font-bold text-blue-800 dark:text-blue-300 mt-1">
-                82/100
+                {healthScore}/100
               </p>
               <p className="text-sm text-blue-600 dark:text-blue-400 mt-1">
-                Good condition
+                {healthScore >= 80 ? "Good condition" : healthScore >= 60 ? "Fair condition" : "Needs attention"}
               </p>
             </div>
 
@@ -122,7 +204,7 @@ export default function Advisory() {
                 Next Review
               </p>
               <p className="text-2xl font-bold text-purple-800 dark:text-purple-300 mt-1">
-                Apr 15
+                {new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
               </p>
               <p className="text-sm text-purple-600 dark:text-purple-400 mt-1">
                 Scheduled financial review
@@ -151,43 +233,53 @@ export default function Advisory() {
                 <option value="tax">Tax</option>
                 <option value="investment">Investment</option>
                 <option value="insurance">Insurance</option>
+                <option value="profitability">Profitability</option>
+                <option value="expenses">Expenses</option>
+                <option value="general">General</option>
               </select>
             </div>
           </div>
 
           <div className="space-y-4">
-            {filteredAdvisories.map((advisory) => (
-              <div
-                key={advisory.id}
-                className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow duration-200"
-              >
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-medium text-gray-900 dark:text-gray-100">
-                      {advisory.title}
-                    </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                      {advisory.description}
-                    </p>
-                    <div className="mt-3 flex items-center space-x-3">
-                      <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getImpactBadge(
-                          advisory.impact
-                        )}`}
-                      >
-                        {advisory.impact} impact
-                      </span>
-                      <span className="text-xs text-gray-500 dark:text-gray-400">
-                        {advisory.date}
-                      </span>
+            {filteredAdvisories.length > 0 ? (
+              filteredAdvisories.map((advisory) => (
+                <div
+                  key={advisory.id}
+                  className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow duration-200"
+                >
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <h3 className="font-medium text-gray-900 dark:text-gray-100">
+                        {advisory.title}
+                      </h3>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        {advisory.description}
+                      </p>
+                      <div className="mt-3 flex items-center space-x-3">
+                        <span
+                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getImpactBadge(
+                            advisory.impact
+                          )}`}
+                        >
+                          {advisory.impact} impact
+                        </span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {advisory.date}
+                        </span>
+                      </div>
                     </div>
+                    <button className="ml-4 px-3 py-1 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white text-sm font-medium rounded-md">
+                      Take Action
+                    </button>
                   </div>
-                  <button className="ml-4 px-3 py-1 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white text-sm font-medium rounded-md">
-                    Take Action
-                  </button>
                 </div>
+              ))
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-500 dark:text-gray-400">No recommendations available for this category.</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">Try selecting a different category or upload financial data.</p>
               </div>
-            ))}
+            )}
           </div>
         </div>
       </div>
@@ -196,93 +288,67 @@ export default function Advisory() {
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700">
         <div className="p-6">
           <h2 className="text-lg font-semibold mb-4">AI Financial Forecast</h2>
-          <div className="p-4 bg-blue-50 dark:bg-blue-900/10 bg-opacity-50 rounded-lg mb-4">
-            <p className="text-sm text-blue-800 dark:text-blue-300">
-              Based on your current financial patterns and market trends, our AI
-              predicts the following outcomes for the next quarter:
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-              <div className="flex items-center mb-3">
-                <div className="h-10 w-10 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center mr-3">
-                  <svg
-                    className="h-5 w-5 text-green-600 dark:text-green-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                    />
-                  </svg>
-                </div>
-                <h3 className="font-medium text-gray-900 dark:text-gray-100">
-                  Revenue Growth
-                </h3>
-              </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Projected 8-12% increase in revenue based on current sales
-                pipeline and market conditions.
+          {apiResponse && apiResponse.aiAnalysis ? (
+            <div className="p-4 bg-blue-50 dark:bg-blue-900/10 bg-opacity-50 rounded-lg mb-4">
+              <p className="text-sm text-blue-800 dark:text-blue-300">
+                {apiResponse.aiAnalysis.forecast || apiResponse.aiAnalysis.summary || 
+                "Based on your current financial patterns and market trends, our AI predicts stable growth over the next quarter. Continue monitoring cash flow and consider the recommendations above to optimize your financial health."}
               </p>
+            </div>
+          ) : (
+            <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg mb-4">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Upload your financial data to receive AI-powered forecasts and insights.
+              </p>
+            </div>
+          )}
+          
+          {/* Rest of the AI Financial Forecast section remains the same */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+              <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
+                Revenue Projection
+              </h3>
+              <div className="h-48 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center">
+                {isDataLoaded && financialData.totalRevenue ? (
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                      {financialData.totalRevenue.toLocaleString()}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Current Revenue</p>
+                    <p className="text-green-600 dark:text-green-400 mt-2">
+                      +5% projected growth
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-gray-500 dark:text-gray-400">
+                    No data available
+                  </p>
+                )}
+              </div>
             </div>
 
             <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-              <div className="flex items-center mb-3">
-                <div className="h-10 w-10 rounded-full bg-yellow-100 dark:bg-yellow-900/20 flex items-center justify-center mr-3">
-                  <svg
-                    className="h-5 w-5 text-yellow-600 dark:text-yellow-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="font-medium text-gray-900 dark:text-gray-100">
-                  Cash Flow
-                </h3>
+              <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-2">
+                Expense Forecast
+              </h3>
+              <div className="h-48 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center">
+                {isDataLoaded && financialData.totalExpenses ? (
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                      {financialData.totalExpenses.toLocaleString()}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">Current Expenses</p>
+                    <p className="text-red-600 dark:text-red-400 mt-2">
+                      +2% projected increase
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-gray-500 dark:text-gray-400">
+                    No data available
+                  </p>
+                )}
               </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Stable cash flow expected with potential for 5% improvement if
-                accounts receivable processes are optimized.
-              </p>
-            </div>
-
-            <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4">
-              <div className="flex items-center mb-3">
-                <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/20 flex items-center justify-center mr-3">
-                  <svg
-                    className="h-5 w-5 text-blue-600 dark:text-blue-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                    />
-                  </svg>
-                </div>
-                <h3 className="font-medium text-gray-900 dark:text-gray-100">
-                  Market Trends
-                </h3>
-              </div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Industry growth rate of 7% expected. Your business is positioned
-                to outperform the market by 2-3%.
-              </p>
             </div>
           </div>
         </div>

@@ -101,10 +101,10 @@ const TeamStatsSection = () => {
             Transforming Financial Management
           </h2>
           <p className="max-w-3xl mx-auto dark:text-gray-300 text-sm">
-            At Finovah, we&apos;re addressing the financial management
-            challenges faced by SMEs and retailers through innovative AI-driven
-            solutions that increase transparency, enhance decision-making, and
-            promote sustainable business growth.
+            At Finova, we&apos;re addressing the financial management challenges
+            faced by SMEs and retailers through innovative AI-driven solutions
+            that increase transparency, enhance decision-making, and promote
+            sustainable business growth.
           </p>
         </div>
 

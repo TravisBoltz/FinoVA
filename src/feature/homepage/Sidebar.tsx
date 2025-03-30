@@ -81,15 +81,16 @@ const Sidebar = ({
                 <h3 className="text-sm font-medium text-white">
                   Total Balance
                 </h3>
-                <div className={`mt-1 text-xl font-semibold ${
-                  financialData && financialData.profit < 0 
-                    ? 'text-red-300' 
-                    : 'text-green-300'
-                }`}>
-                  {financialData && isDataLoaded 
+                <div
+                  className={`mt-1 text-xl font-semibold ${
+                    financialData && financialData.profit < 0
+                      ? "text-red-300"
+                      : "text-green-300"
+                  }`}
+                >
+                  {financialData && isDataLoaded
                     ? `GH¢${financialData.profit.toLocaleString()}`
-                    : '--'
-                  }
+                    : "--"}
                 </div>
               </div>
             </div>
@@ -173,28 +174,6 @@ const Sidebar = ({
           )}
         </ul>
       </nav>
-
-      <div className="mt-auto">
-        <div className="px-4 py-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setDarkMode(!darkMode)}
-                className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
-              >
-                {darkMode ? (
-                  <Sun className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-                ) : (
-                  <Moon className="h-5 w-5 text-gray-600 dark:text-gray-300" />
-                )}
-              </button>
-              <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                {darkMode ? "Light Mode" : "Dark Mode"}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
