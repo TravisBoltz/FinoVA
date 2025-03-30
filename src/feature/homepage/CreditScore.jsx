@@ -198,9 +198,7 @@ export default function CreditScore() {
                 </div>
               ))}
             </div>
-            <button className="w-full mt-4 text-sm text-center text-blue-600 dark:text-blue-500 hover:text-blue-800 dark:hover:text-blue-400 font-medium">
-              View All Alerts
-            </button>
+           
           </div>
         </div>
       </div>

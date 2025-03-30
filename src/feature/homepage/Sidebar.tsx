@@ -57,10 +57,9 @@ const Sidebar = ({
         isMobileMenuOpen ? "block" : "hidden"
       } md:block fixed md:relative z-30 md:z-auto transition-all duration-300 shadow-lg md:shadow-none bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 w-[250px]`}
     >
-      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
-        <h2 className="text-xl font-bold flex items-center text-blue-800 dark:text-blue-500">
-          <DollarSign className="w-6 h-6 mr-2" />
-          FinoVa
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-center">
+        <h2 className="text-4xl font-bold flex items-center justify-center text-blue-800 dark:text-blue-500">
+          Fino<span className="text-gray-500 dark:text-gray-400">Va</span>
         </h2>
         <button
           className="md:hidden"

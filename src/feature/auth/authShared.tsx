@@ -120,7 +120,7 @@ export const SocialLogin = ({
 
       try {
         const response = await fetch(
-          "https://e5ed-102-208-89-6.ngrok-free.app/api/v1/auth/google/initiate",
+          "https://c7c5-102-176-94-204.ngrok-free.app/api/v1/auth/google/initiate",
           {
             method: "GET",
             headers: {

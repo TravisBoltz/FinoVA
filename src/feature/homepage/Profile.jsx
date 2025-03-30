@@ -43,7 +43,7 @@ export default function Profile() {
         // Try to fetch from API first
         try {
           const storedToken =
-            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZjM3MGI5MzItNzE5Zi00OWI0LTgyMjQtZThmMTJiZmY5MDI5IiwiZXhwIjoxNzQzMzMyOTA2LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMyMzA2fQ.w1cSYhDvKhAH3l1-XtlTQlfbgIkt7MOLVFzY7d8LHcQ";
+            "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZjM3MGI5MzItNzE5Zi00OWI0LTgyMjQtZThmMTJiZmY5MDI5IiwiZXhwIjoxNzQzMzM4NTk1LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzM3OTk1fQ.jeuraiBVkOCCEq0GYDso4_g1gpXaUEGp61YsbtY_GIc";
           const userId = "f370b932-719f-49b4-8224-e8f12bff9029";
 
           // Set a timeout to prevent hanging on API requests
@@ -51,7 +51,7 @@ export default function Profile() {
           const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
 
           const response = await fetch(
-            `https://e5ed-102-208-89-6.ngrok-free.app/api/v1/auth/user/${userId}`,
+            `https://c7c5-102-176-94-204.ngrok-free.app/api/v1/auth/user/${userId}`,
             {
               method: "GET",
               headers: {
@@ -109,7 +109,7 @@ export default function Profile() {
         } else if (error.message.includes("abort")) {
           setError("Request timed out. Using fallback data instead.");
         } else {
-          setError(`Could not retrieve user data: ${error.message}`);
+          // setError(`Could not retrieve user data: ${error.message}`);
         }
 
         // Create fallback response in the same format as the API
@@ -149,31 +149,6 @@ export default function Profile() {
       </div>
 
       {/* Error notification at the top if there's an error */}
-      {error && (
-        <div
-          className="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4"
-          role="alert"
-        >
-          <div className="flex">
-            <div className="flex-shrink-0">
-              <svg
-                className="h-5 w-5 text-yellow-400"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <div className="ml-3">
-              <p className="text-sm text-yellow-700">{error}</p>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Profile Header */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden border border-gray-200 dark:border-gray-700">

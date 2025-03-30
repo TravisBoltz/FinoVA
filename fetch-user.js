@@ -3,12 +3,12 @@ import fetch from "node-fetch";
 
 const userId = "f370b932-719f-49b4-8224-e8f12bff9029";
 const token =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZjM3MGI5MzItNzE5Zi00OWI0LTgyMjQtZThmMTJiZmY5MDI5IiwiZXhwIjoxNzQzMzMyOTA2LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMyMzA2fQ.w1cSYhDvKhAH3l1-XtlTQlfbgIkt7MOLVFzY7d8LHcQ";
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZjM3MGI5MzItNzE5Zi00OWI0LTgyMjQtZThmMTJiZmY5MDI5IiwiZXhwIjoxNzQzMzM4NTk1LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzM3OTk1fQ.jeuraiBVkOCCEq0GYDso4_g1gpXaUEGp61YsbtY_GIc";
 
 async function fetchUserDetails() {
   try {
     const response = await fetch(
-      `https://e5ed-102-208-89-6.ngrok-free.app/api/v1/auth/user/${userId}`,
+      `https://c7c5-102-176-94-204.ngrok-free.app/api/v1/auth/user/${userId}`,
       {
         method: "GET",
         headers: {

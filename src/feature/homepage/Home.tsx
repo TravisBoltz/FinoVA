@@ -24,7 +24,7 @@ const Home = () => {
   const [activePage, setActivePage] = useState("dashboard");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
+  const [darkMode, setDarkMode] = useState(true);
   const [isAuthChecking, setIsAuthChecking] = useState(true);
   const navigate = useNavigate();
 

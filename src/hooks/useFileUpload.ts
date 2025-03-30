@@ -67,12 +67,12 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
       return;
     }
 
-    const endpoint = "https://e5ed-102-208-89-6.ngrok-free.app/api/v1/convert-excel-to-json";
+    const endpoint = "https://c7c5-102-176-94-204.ngrok-free.app/api/v1/convert-excel-to-json";
     const formData = new FormData();
     formData.append("file", file);
 
     // Get auth token from localStorage (fallback mechanism)
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZjM3MGI5MzItNzE5Zi00OWI0LTgyMjQtZThmMTJiZmY5MDI5IiwiZXhwIjoxNzQzMzMyOTA2LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMyMzA2fQ.w1cSYhDvKhAH3l1-XtlTQlfbgIkt7MOLVFzY7d8LHcQ'
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZjM3MGI5MzItNzE5Zi00OWI0LTgyMjQtZThmMTJiZmY5MDI5IiwiZXhwIjoxNzQzMzM4NTk1LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzM3OTk1fQ.jeuraiBVkOCCEq0GYDso4_g1gpXaUEGp61YsbtY_GIc'
     if (!token) {
       toast.error("Authentication required. Please log in again.", {
         duration: 3000,
@@ -207,7 +207,7 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
   // Function to send data to AI analysis endpoint
   const sendToAIAnalysis = async (data: any) => {
     // Use the same hardcoded token as in uploadFile
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZjM3MGI5MzItNzE5Zi00OWI0LTgyMjQtZThmMTJiZmY5MDI5IiwiZXhwIjoxNzQzMzMyOTA2LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzMyMzA2fQ.w1cSYhDvKhAH3l1-XtlTQlfbgIkt7MOLVFzY7d8LHcQ'
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZjM3MGI5MzItNzE5Zi00OWI0LTgyMjQtZThmMTJiZmY5MDI5IiwiZXhwIjoxNzQzMzM4NTk1LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzM3OTk1fQ.jeuraiBVkOCCEq0GYDso4_g1gpXaUEGp61YsbtY_GIc'
     if (!token) {
       toast.error("Authentication required for AI analysis. Please log in again.", {
         duration: 3000,
@@ -227,7 +227,7 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
         position: "bottom-right",
       });
 
-      const analyzeEndpoint = "https://e5ed-102-208-89-6.ngrok-free.app/api/v1/ai/analyze";
+      const analyzeEndpoint = "https://c7c5-102-176-94-204.ngrok-free.app/api/v1/ai/analyze";
       
       const xhr = new XMLHttpRequest();
       xhr.open("POST", analyzeEndpoint);

@@ -23,8 +23,8 @@ export const Footer = () => {
       links: [
         {
           icon: <Phone size={18} />,
-          label: "+1 701 541-8223",
-          href: "tel:+17015418223",
+          label: "0264339586",
+          href: "tel:+233264339586",
         },
         {
           icon: <MapPin size={18} />,
@@ -33,7 +33,7 @@ export const Footer = () => {
         },
         {
           icon: <Mail size={18} />,
-          label: "info@finova.com",
+          label: "support@finova.com",
           href: "mailto:info@finova.com",
         },
       ],

@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useAtom } from "jotai";
-import { apiResponseAtom, financialDataAtom, isDataLoadedAtom } from "@/store/atoms";
+import {
+  apiResponseAtom,
+  financialDataAtom,
+  isDataLoadedAtom,
+} from "@/store/atoms";
 import {
   Table,
   TableBody,
@@ -10,7 +14,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -19,19 +29,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { downloadReport } from "@/utils/reportGenerator";
+import { Download, ChevronDown } from "lucide-react";
 
 export default function Reporting() {
   const [reportType, setReportType] = useState("income");
   const [timeframe, setTimeframe] = useState("monthly");
   const [generatingReport, setGeneratingReport] = useState(false);
   const [generatedReport, setGeneratedReport] = useState(null);
-  
+
   // Get data from atoms
   const [financialData] = useAtom(financialDataAtom);
   const [apiResponse] = useAtom(apiResponseAtom);
   const [isDataLoaded] = useAtom(isDataLoadedAtom);
 
-  // Sample reports data - will be replaced with dynamic data
+  // Reports data - will be replaced with dynamic data
   const [reports, setReports] = useState([
     {
       id: 1,
@@ -56,7 +74,7 @@ export default function Reporting() {
   // Generate a report based on the financial data and API response
   const handleGenerateReport = () => {
     setGeneratingReport(true);
-    
+
     // Create a new report from the data
     setTimeout(() => {
       const currentDate = new Date();
@@ -65,24 +83,32 @@ export default function Reporting() {
         day: "numeric",
         year: "numeric",
       });
-      
+
       // Extract relevant data based on report type
       let reportData = {};
-      
+
       if (isDataLoaded && financialData) {
         switch (reportType) {
           case "income":
             reportData = {
               totalRevenue: financialData.totalRevenue,
-              recentTransactions: financialData.recentTransactions.filter(t => t.category === 'Income'),
-              summary: apiResponse?.aiAnalysis?.summary || "Income statement summary not available",
+              recentTransactions: financialData.recentTransactions.filter(
+                (t) => t.category === "Income"
+              ),
+              summary:
+                apiResponse?.aiAnalysis?.summary ||
+                "Income statement summary not available",
             };
             break;
           case "expense":
             reportData = {
               totalExpenses: financialData.totalExpenses,
-              recentTransactions: financialData.recentTransactions.filter(t => t.category === 'Expense'),
-              summary: apiResponse?.aiAnalysis?.summary || "Expense analysis summary not available",
+              recentTransactions: financialData.recentTransactions.filter(
+                (t) => t.category === "Expense"
+              ),
+              summary:
+                apiResponse?.aiAnalysis?.summary ||
+                "Expense analysis summary not available",
             };
             break;
           case "cashflow":
@@ -91,7 +117,9 @@ export default function Reporting() {
               totalExpenses: financialData.totalExpenses,
               profit: financialData.profit,
               upcomingBills: financialData.upcomingBills,
-              summary: apiResponse?.aiAnalysis?.cashflow || "Cash flow summary not available",
+              summary:
+                apiResponse?.aiAnalysis?.cashflow ||
+                "Cash flow summary not available",
             };
             break;
           case "balance":
@@ -99,7 +127,9 @@ export default function Reporting() {
               assets: apiResponse?.financialData?.assets || [],
               liabilities: apiResponse?.financialData?.liabilities || [],
               equity: financialData.profit, // Simplified
-              summary: apiResponse?.aiAnalysis?.balance || "Balance sheet summary not available",
+              summary:
+                apiResponse?.aiAnalysis?.balance ||
+                "Balance sheet summary not available",
             };
             break;
           case "tax":
@@ -107,29 +137,34 @@ export default function Reporting() {
               totalRevenue: financialData.totalRevenue,
               totalExpenses: financialData.totalExpenses,
               taxableIncome: financialData.profit,
-              summary: apiResponse?.aiAnalysis?.tax || "Tax summary not available",
+              summary:
+                apiResponse?.aiAnalysis?.tax || "Tax summary not available",
             };
             break;
           default:
             reportData = {
-              summary: "Report data not available. Please upload financial data.",
+              summary:
+                "Report data not available. Please upload financial data.",
             };
         }
       } else {
         reportData = {
-          summary: "No financial data available. Please upload your financial data first.",
+          summary:
+            "No financial data available. Please upload your financial data first.",
         };
       }
-      
+
       // Create the new report
       const newReport = {
         id: reports.length + 1,
-        name: `${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Report (${timeframe})`,
+        name: `${
+          reportType.charAt(0).toUpperCase() + reportType.slice(1)
+        } Report (${timeframe})`,
         date: formattedDate,
         type: timeframe,
         data: reportData,
       };
-      
+
       // Add to reports list and set as generated report
       setReports([newReport, ...reports]);
       setGeneratedReport(newReport);
@@ -137,8 +172,13 @@ export default function Reporting() {
     }, 2000);
   };
 
+  // Handle report download
+  const handleDownload = (report, format) => {
+    downloadReport(report, format);
+  };
+
   return (
-    <div className="p-6 space-y-6 text-gray-900 dark:text-gray-100">
+    <div className="p-6 space-y-6  text-gray-900 dark:text-gray-100">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Reports</h1>
       </div>
@@ -186,10 +226,10 @@ export default function Reporting() {
             </div>
 
             <div className="flex items-end">
-              <Button 
+              <Button
                 onClick={handleGenerateReport}
                 disabled={generatingReport}
-                className="w-full"
+                className="w-full bg-blue-600 hover:bg-blue-800  dark:hover:bg-blue-600"
               >
                 {generatingReport ? (
                   <>
@@ -244,11 +284,12 @@ export default function Reporting() {
               </div>
             </div>
           )}
-          
+
           {!isDataLoaded && (
             <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300 rounded-lg">
               <p className="text-sm">
-                No financial data available. Please upload your financial data first to generate accurate reports.
+                No financial data available. Please upload your financial data
+                first to generate accurate reports.
               </p>
             </div>
           )}
@@ -261,11 +302,37 @@ export default function Reporting() {
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <div>
               <CardTitle>{generatedReport.name}</CardTitle>
-              <CardDescription>Generated on {generatedReport.date}</CardDescription>
+              <CardDescription>
+                Generated on {generatedReport.date}
+              </CardDescription>
             </div>
             <div className="flex space-x-2">
-              <Button variant="outline" size="sm">Download PDF</Button>
-              <Button variant="outline" size="sm">Share</Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <Download className="mr-2 h-4 w-4" />
+                    Download
+                    <ChevronDown className="ml-2 h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={() => handleDownload(generatedReport, "pdf")}
+                  >
+                    Download as PDF
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => handleDownload(generatedReport, "csv")}
+                  >
+                    Download as CSV
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => handleDownload(generatedReport, "json")}
+                  >
+                    Download as JSON
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </CardHeader>
           <CardContent>
@@ -276,29 +343,31 @@ export default function Reporting() {
                   {generatedReport.data.summary}
                 </p>
               </div>
-              
-              {reportType === "income" && generatedReport.data.totalRevenue !== undefined && (
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
-                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-                    Total Revenue
-                  </h4>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                    ${generatedReport.data.totalRevenue.toLocaleString()}
-                  </p>
-                </div>
-              )}
-              
-              {reportType === "expense" && generatedReport.data.totalExpenses !== undefined && (
-                <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
-                  <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
-                    Total Expenses
-                  </h4>
-                  <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                    ${generatedReport.data.totalExpenses.toLocaleString()}
-                  </p>
-                </div>
-              )}
-              
+
+              {reportType === "income" &&
+                generatedReport.data.totalRevenue !== undefined && (
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
+                    <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                      Total Revenue
+                    </h4>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      ${generatedReport.data.totalRevenue.toLocaleString()}
+                    </p>
+                  </div>
+                )}
+
+              {reportType === "expense" &&
+                generatedReport.data.totalExpenses !== undefined && (
+                  <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-4">
+                    <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
+                      Total Expenses
+                    </h4>
+                    <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                      ${generatedReport.data.totalExpenses.toLocaleString()}
+                    </p>
+                  </div>
+                )}
+
               {reportType === "cashflow" && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
@@ -306,7 +375,9 @@ export default function Reporting() {
                       Total Revenue
                     </h4>
                     <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                      ${generatedReport.data.totalRevenue?.toLocaleString() || "0"}
+                      $
+                      {generatedReport.data.totalRevenue?.toLocaleString() ||
+                        "0"}
                     </p>
                   </div>
                   <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
@@ -314,84 +385,119 @@ export default function Reporting() {
                       Total Expenses
                     </h4>
                     <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                      ${generatedReport.data.totalExpenses?.toLocaleString() || "0"}
+                      $
+                      {generatedReport.data.totalExpenses?.toLocaleString() ||
+                        "0"}
                     </p>
                   </div>
                   <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                     <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
                       Net Profit
                     </h4>
-                    <p className={`text-xl font-bold ${generatedReport.data.profit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                      ${Math.abs(generatedReport.data.profit || 0).toLocaleString()}
-                      {generatedReport.data.profit < 0 ? ' (Loss)' : ''}
+                    <p
+                      className={`text-xl font-bold ${
+                        generatedReport.data.profit >= 0
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-red-600 dark:text-red-400"
+                      }`}
+                    >
+                      $
+                      {Math.abs(
+                        generatedReport.data.profit || 0
+                      ).toLocaleString()}
+                      {generatedReport.data.profit < 0 ? " (Loss)" : ""}
                     </p>
                   </div>
                 </div>
               )}
-              
+
               {/* Show transactions if available using shadcn Table */}
-              {generatedReport.data.recentTransactions && generatedReport.data.recentTransactions.length > 0 && (
-                <div className="mt-4">
-                  <h4 className="text-md font-medium mb-2">Recent Transactions</h4>
-                  <Table>
-                    <TableCaption>Recent financial transactions from the selected period.</TableCaption>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Description</TableHead>
-                        <TableHead>Amount</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Category</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {generatedReport.data.recentTransactions.slice(0, 5).map((transaction) => (
-                        <TableRow key={transaction.id}>
-                          <TableCell className="font-medium">{transaction.description}</TableCell>
-                          <TableCell>${transaction.amount.toLocaleString()}</TableCell>
-                          <TableCell>{transaction.date}</TableCell>
-                          <TableCell>{transaction.category}</TableCell>
+              {generatedReport.data.recentTransactions &&
+                generatedReport.data.recentTransactions.length > 0 && (
+                  <div className="mt-4">
+                    <h4 className="text-md font-medium mb-2">
+                      Recent Transactions
+                    </h4>
+                    <Table>
+                      <TableCaption>
+                        Recent financial transactions from the selected period.
+                      </TableCaption>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Description</TableHead>
+                          <TableHead>Amount</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Category</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
-              
+                      </TableHeader>
+                      <TableBody>
+                        {generatedReport.data.recentTransactions
+                          .slice(0, 5)
+                          .map((transaction) => (
+                            <TableRow key={transaction.id}>
+                              <TableCell className="font-medium">
+                                {transaction.description}
+                              </TableCell>
+                              <TableCell>
+                                ${transaction.amount.toLocaleString()}
+                              </TableCell>
+                              <TableCell>{transaction.date}</TableCell>
+                              <TableCell>{transaction.category}</TableCell>
+                            </TableRow>
+                          ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+
               {/* Show upcoming bills if available using shadcn Table */}
-              {reportType === "cashflow" && generatedReport.data.upcomingBills && generatedReport.data.upcomingBills.length > 0 && (
-                <div className="mt-6">
-                  <h4 className="text-md font-medium mb-2">Upcoming Bills</h4>
-                  <Table>
-                    <TableCaption>Upcoming bills and payments due.</TableCaption>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Description</TableHead>
-                        <TableHead>Amount</TableHead>
-                        <TableHead>Due Date</TableHead>
-                        <TableHead>Status</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {generatedReport.data.upcomingBills.map((bill, index) => (
-                        <TableRow key={index}>
-                          <TableCell className="font-medium">{bill.description}</TableCell>
-                          <TableCell>${bill.amount.toLocaleString()}</TableCell>
-                          <TableCell>{bill.dueDate}</TableCell>
-                          <TableCell>
-                            <span className={`px-2 py-1 rounded-full text-xs ${
-                              bill.status === 'paid' 
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400' 
-                                : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
-                            }`}>
-                              {bill.status.charAt(0).toUpperCase() + bill.status.slice(1)}
-                            </span>
-                          </TableCell>
+              {reportType === "cashflow" &&
+                generatedReport.data.upcomingBills &&
+                generatedReport.data.upcomingBills.length > 0 && (
+                  <div className="mt-6">
+                    <h4 className="text-md font-medium mb-2">Upcoming Bills</h4>
+                    <Table>
+                      <TableCaption>
+                        Upcoming bills and payments due.
+                      </TableCaption>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Description</TableHead>
+                          <TableHead>Amount</TableHead>
+                          <TableHead>Due Date</TableHead>
+                          <TableHead>Status</TableHead>
                         </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              )}
+                      </TableHeader>
+                      <TableBody>
+                        {generatedReport.data.upcomingBills.map(
+                          (bill, index) => (
+                            <TableRow key={index}>
+                              <TableCell className="font-medium">
+                                {bill.description}
+                              </TableCell>
+                              <TableCell>
+                                ${bill.amount.toLocaleString()}
+                              </TableCell>
+                              <TableCell>{bill.dueDate}</TableCell>
+                              <TableCell>
+                                <span
+                                  className={`px-2 py-1 rounded-full text-xs ${
+                                    bill.status === "paid"
+                                      ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
+                                      : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
+                                  }`}
+                                >
+                                  {bill.status.charAt(0).toUpperCase() +
+                                    bill.status.slice(1)}
+                                </span>
+                              </TableCell>
+                            </TableRow>
+                          )
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
             </div>
           </CardContent>
         </Card>
@@ -401,7 +507,6 @@ export default function Reporting() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle>Recent Reports</CardTitle>
-          <Button variant="link" size="sm">View All Reports</Button>
         </CardHeader>
         <CardContent>
           <Table>
@@ -425,14 +530,31 @@ export default function Reporting() {
                   </TableCell>
                   <TableCell>
                     <div className="flex space-x-2">
-                      <Button variant="outline" size="sm">Download</Button>
-                      <Button 
-                        variant="ghost" 
-                        size="sm"
-                        onClick={() => setGeneratedReport(report)}
-                      >
-                        View
-                      </Button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" size="sm">
+                            <Download className="mr-2 h-4 w-4" />
+                            Download
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuItem
+                            onClick={() => handleDownload(report, "pdf")}
+                          >
+                            Download as PDF
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleDownload(report, "csv")}
+                          >
+                            Download as CSV
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => handleDownload(report, "json")}
+                          >
+                            Download as JSON
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
                   </TableCell>
                 </TableRow>
