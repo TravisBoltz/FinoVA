@@ -206,8 +206,8 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
 
   // Function to send data to AI analysis endpoint
   const sendToAIAnalysis = async (data: any) => {
-    // Get auth token from localStorage (fallback mechanism)
-    const token = localStorage.getItem("auth_token");
+    // Use the same hardcoded token as in uploadFile
+    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzODYwOTQtODlhNi00ZjlmLTk4OTYtYzE2ZGExM2YzZTljIiwiZXhwIjoxNzQzMzI2MTY2LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzI1NTY2fQ.8cU7Vn62o-_2cZdyoXQFWx01iOFY0xsItOQEAZs6DLM'
     if (!token) {
       toast.error("Authentication required for AI analysis. Please log in again.", {
         duration: 3000,

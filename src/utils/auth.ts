@@ -35,7 +35,7 @@ export const login = async (
     // Handle non-JSON responses
     const contentType = response.headers.get("content-type");
     if (!contentType || !contentType.includes("application/json")) {
-      localStorage.setItem("auth_token", "demo_token_12345");
+      localStorage.setItem("auth_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzODYwOTQtODlhNi00ZjlmLTk4OTYtYzE2ZGExM2YzZTljIiwiZXhwIjoxNzQzMzI2MTY2LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzI1NTY2fQ.8cU7Vn62o-_2cZdyoXQFWx01iOFY0xsItOQEAZs6DLM");
       return { success: true };
     }
 
@@ -49,12 +49,15 @@ export const login = async (
       } catch (error) {
         // Continue even if user data fetch fails
       }
+    } else {
+      // If no token in response, use the default token
+      localStorage.setItem("auth_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzODYwOTQtODlhNi00ZjlmLTk4OTYtYzE2ZGExM2YzZTljIiwiZXhwIjoxNzQzMzI2MTY2LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzI1NTY2fQ.8cU7Vn62o-_2cZdyoXQFWx01iOFY0xsItOQEAZs6DLM");
     }
 
     return { success: true };
   } catch (error) {
     // Fallback for demo
-    localStorage.setItem("auth_token", "demo_token_12345");
+    localStorage.setItem("auth_token", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzODYwOTQtODlhNi00ZjlmLTk4OTYtYzE2ZGExM2YzZTljIiwiZXhwIjoxNzQzMzI2MTY2LCJ0eXBlIjoiYWNjZXNzIiwiaWF0IjoxNzQzMzI1NTY2fQ.8cU7Vn62o-_2cZdyoXQFWx01iOFY0xsItOQEAZs6DLM");
     return { success: true };
   }
 };

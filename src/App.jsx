@@ -23,7 +23,7 @@ const ProtectedRoute = ({ children }) => {
   // Check if token exists in localStorage using our auth utility
   if (!isAuthenticated()) {
     // Redirect to auth page if not authenticated
-    return <Navigate to="/auth" replace />;
+    return <Navigate to="/register" replace />;
   }
 
   return children;
