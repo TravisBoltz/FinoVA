@@ -3,7 +3,7 @@
  */
 
 // API URL
-const API_URL = "https://e5ed-102-208-89-6.ngrok-free.app/api/v1/auth";
+const API_URL = "/api/v1/auth";
 
 /**
  * Login function - handles authentication with email and password

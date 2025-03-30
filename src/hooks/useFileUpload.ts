@@ -67,7 +67,7 @@ export const useFileUpload = (options?: UseFileUploadOptions) => {
       return;
     }
 
-    const endpoint = options?.endpoint || "https://e5ed-102-208-89-6.ngrok-free.app/api/v1/convert-excel-to-json";
+    const endpoint = "https://e5ed-102-208-89-6.ngrok-free.app/api/v1/convert-excel-to-json";
     const formData = new FormData();
     formData.append("file", file);
 
